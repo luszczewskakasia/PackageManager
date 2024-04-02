@@ -1,6 +1,8 @@
 using UnityEngine;
 using System;
 using System.Net;
+using System.Collections;
+using System.Collections.Generic;
 using RESTfulHTTPServer.src.models;
 using RESTfulHTTPServer.src.controller;
 
@@ -37,10 +39,12 @@ namespace RESTfulHTTPServer.src.invoker
                 {
                     try
                     {
-                        Simulation sim = new Simulation();    
-                        responseData = JsonUtility.ToJson(sim);
+                        Simulation simComponent = gameObject.GetComponent<Simulation>();
+
+                        responseData = JsonUtility.ToJson(simComponent);
                         response.SetHTTPStatusCode((int)HttpStatusCode.OK);
 
+                        
                     }
                     catch (Exception e)
                     {
