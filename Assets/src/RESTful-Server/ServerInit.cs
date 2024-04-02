@@ -54,9 +54,13 @@ public class ServerInit : MonoBehaviour
 		routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
 		routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
 
-		// Starts the Simple REST Server
-		// With or without basic authorisation flag
-		if (!username.Equals("") && !password.Equals("")) 
+		// symulacja
+        routingManager.AddRoute(new Route(Route.Type.GET, "/sim/{objname}", "SimulationInvoker.Get"));
+        routingManager.AddRoute(new Route(Route.Type.POST, "/sim/{objname}", "SimulationInvoker.Set"));
+
+        // Starts the Simple REST Server
+        // With or without basic authorisation flag
+        if (!username.Equals("") && !password.Equals("")) 
 		{
 			RESTfulHTTPServer.src.controller.Logger.Log(TAG, "Create basic auth");
 			BasicAuth basicAuth = new BasicAuth (username, password);
