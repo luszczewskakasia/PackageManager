@@ -57,6 +57,16 @@ public class ServerInit : MonoBehaviour
 		// symulacja
         routingManager.AddRoute(new Route(Route.Type.GET, "/sim/{objname}", "SimulationInvoker.Get"));
         routingManager.AddRoute(new Route(Route.Type.POST, "/sim/{objname}", "SimulationInvoker.Set"));
+        
+		// symulacja
+        routingManager.AddRoute(new Route(Route.Type.GET, "/sort/{objname}", "SortInvoker.Get"));
+
+        // Paczki
+        routingManager.AddRoute(new Route(Route.Type.GET, "/pack/{objname}", "PackagesInvoker.Get"));
+        routingManager.AddRoute(new Route(Route.Type.POST, "/pack/{objname}", "PackagesInvoker.Set"));
+        routingManager.AddRoute(new Route(Route.Type.DELETE, "/pack/{objname}", "PackagesInvoker.DELETE"));
+        routingManager.AddRoute(new Route(Route.Type.PUT, "/pack/{objname}", "PackagesInvoker.PUT"));
+
 
         // Starts the Simple REST Server
         // With or without basic authorisation flag
