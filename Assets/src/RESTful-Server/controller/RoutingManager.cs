@@ -70,7 +70,7 @@ namespace RESTfulHTTPServer.src.controller
 			}
             else
             {
-                throw new Exception("HTTP Tpye not matching");
+                throw new Exception("HTTP Type not matching");
             }
         }
 
@@ -87,7 +87,7 @@ namespace RESTfulHTTPServer.src.controller
             }
             else
             {
-                throw new Exception("HTTP Tpye not matching");
+                throw new Exception("HTTP Type not matching");
             }
         }
 
@@ -104,7 +104,7 @@ namespace RESTfulHTTPServer.src.controller
             }
             else
             {
-                throw new Exception("HTTP Tpye not matching");
+                throw new Exception("HTTP Type not matching");
             }
         }
 
@@ -120,7 +120,7 @@ namespace RESTfulHTTPServer.src.controller
 			}
 			else
 			{
-				throw new Exception("HTTP Tpye not matching");
+				throw new Exception("HTTP Type not matching");
 			}
 		}
 
@@ -136,7 +136,7 @@ namespace RESTfulHTTPServer.src.controller
 			}
 			else
 			{
-				throw new Exception("HTTP Tpye not matching");
+				throw new Exception("HTTP Type not matching");
 			}
 		}
 
