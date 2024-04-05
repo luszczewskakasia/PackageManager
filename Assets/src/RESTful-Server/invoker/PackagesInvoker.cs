@@ -100,7 +100,12 @@ namespace RESTfulHTTPServer.src.invoker
 
                         // Deserialise the material
                         //MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
+
                         MenagePackage Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
+                        // tu jeszcze zamiast MenagePackage mo¿na daæ dynamic i to powinno zadzia³aæ, ale problem jest z tym Newtonsoft.json, bo unity go nie widzi
+                        // i visual chyba te¿ :(
+
+
                         //MenagePackeges Packages_List_res = new MenagePackeges();
                         // Check if it's our light source
                         //if (gameObject.GetComponent<MenagePackeges>() != null)
