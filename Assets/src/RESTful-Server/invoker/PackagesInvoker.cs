@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using RESTfulHTTPServer.src.models;
 using RESTfulHTTPServer.src.controller;
+using Newtonsoft.Json;
 
 namespace RESTfulHTTPServer.src.invoker
 {
@@ -48,7 +49,7 @@ namespace RESTfulHTTPServer.src.invoker
                     }
                     catch (Exception e)
                     {
-                        string msg = "Failed to seiralised JSON";
+                        string msg = "Failed to serialised JSON";
                         responseData = msg;
 
                         RESTfulHTTPServer.src.controller.Logger.Log(TAG, msg);
@@ -98,7 +99,8 @@ namespace RESTfulHTTPServer.src.invoker
                     {
 
                         // Deserialise the material
-                        MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
+                        //MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
+                        MenagePackage Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
                         //MenagePackeges Packages_List_res = new MenagePackeges();
                         // Check if it's our light source
                         //if (gameObject.GetComponent<MenagePackeges>() != null)

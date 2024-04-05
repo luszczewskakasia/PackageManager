@@ -49,10 +49,10 @@ public class ServerInit : MonoBehaviour
 		// 1. Create the routing table
 		// HTTP Type 	 - URL routing path with variables 	- Class and method to be called
 		// HTTP Type     - /foo/bar/{variable}   			- DelegetorClass.MethodToBeCalled
-		RoutingManager routingManager = new RoutingManager();
-		routingManager.AddRoute(new Route(Route.Type.GET, "/color/{objname}", "MaterialInvoke.GetColor"));
-		routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
-		routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
+		//RoutingManager routingManager = new RoutingManager();
+		//routingManager.AddRoute(new Route(Route.Type.GET, "/color/{objname}", "MaterialInvoke.GetColor"));
+		//routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
+		//routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
 
 		// symulacja
         routingManager.AddRoute(new Route(Route.Type.GET, "/sim/{objname}", "SimulationInvoker.Get"));
