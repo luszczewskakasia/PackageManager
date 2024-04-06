@@ -13,7 +13,10 @@ namespace RESTfulHTTPServer.src.invoker
     public class PackagesInvoker
     {
         private const string TAG = "Packages Invoker";
-
+        public interface ExtensionOfNativeClass
+        {
+            // Marker interface does not require any methods
+        }
         /// <summary>
         /// Get the color of an object
         /// </summary>
@@ -110,8 +113,8 @@ namespace RESTfulHTTPServer.src.invoker
                         //if (gameObject.GetComponent<MenagePackeges>() != null)
                         //{
                         //    // Set the color to the object
-                        //    MenagePackeges managePack = gameObject.GetComponent<MenagePackeges>();
-                        //    managePack.SetList(Packages_List.GetList());
+                        MenagePackeges managePack = gameObject.GetComponent<MenagePackeges>();
+                        managePack.SetList(Packages_List.GetList());
 
                         //    Packages_List_res.SetList(Packages_List.GetList());
                         //    responseData = JsonUtility.ToJson(Packages_List_res);

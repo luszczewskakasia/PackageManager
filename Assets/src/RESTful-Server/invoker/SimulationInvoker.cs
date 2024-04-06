@@ -11,7 +11,6 @@ namespace RESTfulHTTPServer.src.invoker
     public class SimulationInvoker
     {
         private const string TAG = "Simulation Invoker";
-
         /// <summary>
         /// Get the color of an object
         /// </summary>
