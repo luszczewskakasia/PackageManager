@@ -5,13 +5,18 @@ using System.Collections;
 using System.Collections.Generic;
 using RESTfulHTTPServer.src.models;
 using RESTfulHTTPServer.src.controller;
+using Newtonsoft.Json;
+// using System.Text.Json;
 
 namespace RESTfulHTTPServer.src.invoker
 {
     public class PackagesInvoker
     {
         private const string TAG = "Packages Invoker";
-
+        public interface ExtensionOfNativeClass
+        {
+            // Marker interface does not require any methods
+        }
         /// <summary>
         /// Get the color of an object
         /// </summary>
@@ -48,7 +53,7 @@ namespace RESTfulHTTPServer.src.invoker
                     }
                     catch (Exception e)
                     {
-                        string msg = "Failed to seiralised JSON";
+                        string msg = "Failed to serialised JSON";
                         responseData = msg;
 
                         RESTfulHTTPServer.src.controller.Logger.Log(TAG, msg);
@@ -98,24 +103,29 @@ namespace RESTfulHTTPServer.src.invoker
                     {
 
                         // Deserialise the material
-                        MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
+                        //MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
+
+                        MenagePackeges Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
+                        //dynamic Packages_List = JsonSerializer.Deserialize<MenagePackeges>(json);
+
                         //MenagePackeges Packages_List_res = new MenagePackeges();
                         // Check if it's our light source
                         //if (gameObject.GetComponent<MenagePackeges>() != null)
                         //{
                         //    // Set the color to the object
-                        //    MenagePackeges managePack = gameObject.GetComponent<MenagePackeges>();
-                        //    managePack.SetList(Packages_List.GetList());
+                        MenagePackeges managePack = gameObject.GetComponent<MenagePackeges>();
+                        managePack.SetList(Packages_List.GetList());
 
                         //    Packages_List_res.SetList(Packages_List.GetList());
                         //    responseData = JsonUtility.ToJson(Packages_List_res);
                         responseData = json;
+                        response.SetHTTPStatusCode((int)HttpStatusCode.OK);
                         //}
                     }
                     catch (Exception e)
                     {
                         valid = false;
-                        string msg = e.ToString();
+                        string msg = "Error: "+ e.ToString();
                         responseData = msg;
 
                         RESTfulHTTPServer.src.controller.Logger.Log(TAG, msg);
