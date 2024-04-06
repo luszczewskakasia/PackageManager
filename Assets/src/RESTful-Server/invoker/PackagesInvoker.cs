@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using RESTfulHTTPServer.src.models;
 using RESTfulHTTPServer.src.controller;
 using Newtonsoft.Json;
+// using System.Text.Json;
 
 namespace RESTfulHTTPServer.src.invoker
 {
@@ -101,10 +102,8 @@ namespace RESTfulHTTPServer.src.invoker
                         // Deserialise the material
                         //MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
 
-                        MenagePackage Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
-                        // tu jeszcze zamiast MenagePackage mo¿na daæ dynamic i to powinno zadzia³aæ, ale problem jest z tym Newtonsoft.json, bo unity go nie widzi
-                        // i visual chyba te¿ :(
-
+                        MenagePackeges Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
+                        //dynamic Packages_List = JsonSerializer.Deserialize<MenagePackeges>(json);
 
                         //MenagePackeges Packages_List_res = new MenagePackeges();
                         // Check if it's our light source
@@ -117,12 +116,13 @@ namespace RESTfulHTTPServer.src.invoker
                         //    Packages_List_res.SetList(Packages_List.GetList());
                         //    responseData = JsonUtility.ToJson(Packages_List_res);
                         responseData = json;
+                        response.SetHTTPStatusCode((int)HttpStatusCode.OK);
                         //}
                     }
                     catch (Exception e)
                     {
                         valid = false;
-                        string msg = e.ToString();
+                        string msg = "Error: "+ e.ToString();
                         responseData = msg;
 
                         RESTfulHTTPServer.src.controller.Logger.Log(TAG, msg);
