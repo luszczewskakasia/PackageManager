@@ -8,7 +8,6 @@ public class warehouse
 {
     //dane do inicjalizacji
     public string Destination;
-    public int warehouseID;
     public int BigPackagesSlots;
     public int MediumPackagesSlots;
     public int SmallPackagesSlots;
@@ -17,6 +16,7 @@ public class warehouse
     private List<int> Empty_slots;
     private List<bool> PackegesOverload;
     private Dictionary<string, int> storageList;
+    public GameObject instantiatedObject;
 
     //dane z linii produkcyjnej
     public float LocationX;
@@ -24,10 +24,9 @@ public class warehouse
     public float rotation;
 
 
-    public warehouse(string Destination, int warehouseID, float LocationX, float LocationY, float rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
+    public warehouse(string Destination, float LocationX, float LocationY, float rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
     {
         this.Destination = Destination;
-        this.warehouseID = warehouseID;
         this.BigPackagesSlots = BigPackagesSlots;
         this.MediumPackagesSlots = MediumPackagesSlots;
         this.SmallPackagesSlots = SmallPachagesSlots;
@@ -66,4 +65,32 @@ public class warehouse
     {
         return this;
     }
+
+    public void Add_MeshObject(GameObject InstanceWarehouse) 
+    { 
+        this.instantiatedObject = InstanceWarehouse;    
+    }
+
+    public void UpdateMeshRotation(float posX, float posY)
+    {
+        this.LocationX = posX;
+        this.LocationY = posY;
+
+        if (instantiatedObject != null)
+        {
+            this.instantiatedObject.transform.position = new Vector3(posX, 1f, posY);
+        }
+    }
+
+    public void UpdateMeshPosition(float Rot)
+    {
+        this.rotation = Rot;
+        if (instantiatedObject != null)
+        {
+            this.instantiatedObject.transform.position = new Vector3(0, Rot, 0);
+
+        }
+
+    }
+
 }
