@@ -41,7 +41,7 @@ namespace RESTfulHTTPServer.src.invoker
                     {
                         Simulation simComponent = gameObject.GetComponent<Simulation>();
 
-                        responseData = JsonUtility.ToJson(simComponent);
+                        responseData = simComponent.ToJson();
                         response.SetHTTPStatusCode((int)HttpStatusCode.OK);
 
                         
