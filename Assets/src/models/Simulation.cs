@@ -58,7 +58,7 @@ public class Simulation: MonoBehaviour
 
         for (int i = 0; i < 1; i++)
         {
-            this.Add_warehouse(new warehouse("Krk", (float)(i*3), (float)(i * 3), (float)(i * 3), i, i, i));
+            this.Add_warehouse(new warehouse("Krk", (float)(i*10), (float)(i * 10), (float)(i * 3), i, i, i));
         }
         this.Line_start_x = 0f;
         this.Line_start_y = 0f;
@@ -84,7 +84,7 @@ public class Simulation: MonoBehaviour
 
     public void Add_warehouse(warehouse New_Whouse) 
     {
-        New_Whouse.Add_MeshObject(Small_Mesh,ML_Mesh,ML_W,ML_L,ML_H);
+        New_Whouse.Add_MeshObject(ML_Mesh,ML_W,ML_L,ML_H, last_id);
         this.Warehouses[last_id] = New_Whouse;
         last_id++;
     }
@@ -97,14 +97,50 @@ public class Simulation: MonoBehaviour
 
     public string ToJson()
     {
+        string sb = "{ \"Warehouses\": [";
 
-        string responseJson = JsonUtility.ToJson(this);
+        // Iteracja po wszystkich kluczach w s³owniku Warehouses
+        foreach (int key in Warehouses.Keys)
+        {
+            warehouse warehouse_ = Warehouses[key];
 
-        return responseJson;
+            sb += $"{key}:";
+            sb += "{";
+            sb += $"\"Destination\": {warehouse_.Destination},";
+            sb += $"\"BigPackagesSlots\": {warehouse_.BigPackagesSlots},";
+            sb += $"\"MediumPackagesSlots\": {warehouse_.MediumPackagesSlots},";
+            sb += $"\"SmallPackagesSlots\": {warehouse_.SmallPackagesSlots},";
+            sb += $"\"LocationX\": {warehouse_.LocationX},";
+            sb += $"\"LocationY\": {warehouse_.LocationY}";
+            sb += "},"; 
+        }
 
+        if (sb.EndsWith(","))
+        {
+            sb = sb.Remove(sb.Length - 1);
+        }
+
+        sb += "]}";
+
+        return sb;
     }
 
 
 
-
 }
+//public string Destination;
+//public int BigPackagesSlots;
+//public int MediumPackagesSlots;
+//public int SmallPackagesSlots;
+
+////dane operacyjne
+//private List<int> Empty_slots;
+//private List<bool> PackegesOverload;
+//private Dictionary<string, int> storageList;
+//[JsonIgnore]
+//public GameObject instantiatedObject;
+
+////dane z linii produkcyjnej
+//public float LocationX;
+//public float LocationY;
+//public float rotation;
