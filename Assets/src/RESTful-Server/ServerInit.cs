@@ -158,6 +158,7 @@ public class ServerInit : MonoBehaviour
         // Creating a Simple REST server
         // ------------------------------
 
+<<<<<<< HEAD
         // 1. Create the routing table
         // HTTP Type 	 - URL routing path with variables 	- Class and method to be called
         // HTTP Type     - /foo/bar/{variable}   			- DelegetorClass.MethodToBeCalled
@@ -165,6 +166,15 @@ public class ServerInit : MonoBehaviour
         routingManager.AddRoute(new Route(Route.Type.GET, "/color/{objname}", "MaterialInvoke.GetColor"));
         routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
         routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
+=======
+		// 1. Create the routing table
+		// HTTP Type 	 - URL routing path with variables 	- Class and method to be called
+		// HTTP Type     - /foo/bar/{variable}   			- DelegetorClass.MethodToBeCalled
+		//RoutingManager routingManager = new RoutingManager();
+		//routingManager.AddRoute(new Route(Route.Type.GET, "/color/{objname}", "MaterialInvoke.GetColor"));
+		//routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
+		//routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
+>>>>>>> dd6ddf6 (jakieś zmiany, ale mało co działa)
 
         // symulacja
         routingManager.AddRoute(new Route(Route.Type.GET, "/sim/{objname}", "SimulationInvoker.Get"));
