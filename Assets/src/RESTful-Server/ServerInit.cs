@@ -62,6 +62,8 @@ public class ServerInit : MonoBehaviour
         routingManager.AddRoute(new Route(Route.Type.PUT, "/sim/{objname}", "SimulationInvoker.Put")); // dodaje nowy magazyn, dodaje linie produkcyjną która do niego prowadzi
         routingManager.AddRoute(new Route(Route.Type.PUT, "/sim/delete/{objname}", "SimulationInvoker.Delete")); // usuwa magazyn po ID oraz linię produkcyjną
 
+
+
         // linia sortująca
         routingManager.AddRoute(new Route(Route.Type.POST, "/sort/{objname}", "SortInvoker.create"));// tworzy główną linię sortowania
 
