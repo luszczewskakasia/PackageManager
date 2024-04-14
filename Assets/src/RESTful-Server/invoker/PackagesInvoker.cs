@@ -7,9 +7,13 @@ using RESTfulHTTPServer.src.models;
 using RESTfulHTTPServer.src.controller;
 using Newtonsoft.Json;
 <<<<<<< HEAD
+<<<<<<< HEAD
 // using System.Text.Json;
 =======
 >>>>>>> dd6ddf6 (jakieś zmiany, ale mało co działa)
+=======
+// using System.Text.Json;
+>>>>>>> origin/master
 
 namespace RESTfulHTTPServer.src.invoker
 {
@@ -108,13 +112,19 @@ namespace RESTfulHTTPServer.src.invoker
                         // Deserialise the material
                         //MenagePackeges Packages_List = JsonUtility.FromJson<MenagePackeges>(json);
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/master
 
                         MenagePackeges Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
                         //dynamic Packages_List = JsonSerializer.Deserialize<MenagePackeges>(json);
 
+<<<<<<< HEAD
 =======
                         MenagePackage Packages_List = JsonConvert.DeserializeObject<MenagePackeges>(json);
 >>>>>>> dd6ddf6 (jakieś zmiany, ale mało co działa)
+=======
+>>>>>>> origin/master
                         //MenagePackeges Packages_List_res = new MenagePackeges();
                         // Check if it's our light source
                         //if (gameObject.GetComponent<MenagePackeges>() != null)

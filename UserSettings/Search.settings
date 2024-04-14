@@ -8,6 +8,15 @@ onBoardingDoNotAskAgain = true
 showPackageIndexes = false
 showStatusBar = false
 scopes = {
+<<<<<<< HEAD
+=======
+	"last_search.DA949528" = "package man"
+	"OpenInspectorPreview.DA949528" = "0"
+	"currentGroup.DA949528" = "all"
+	"last_search.DD5CDD96" = ""
+	"OpenInspectorPreview.DD5CDD96" = "0"
+	"currentGroup.DD5CDD96" = "scene"
+>>>>>>> origin/master
 }
 providers = {
 	adb = {
@@ -15,6 +24,7 @@ providers = {
 		priority = 2500
 		defaultAction = null
 	}
+<<<<<<< HEAD
 	performance = {
 		active = false
 		priority = 100
@@ -25,16 +35,27 @@ providers = {
 		priority = 210
 		defaultAction = null
 	}
+=======
+>>>>>>> origin/master
 	asset = {
 		active = true
 		priority = 25
 		defaultAction = null
 	}
+<<<<<<< HEAD
+=======
+	store = {
+		active = true
+		priority = 100
+		defaultAction = null
+	}
+>>>>>>> origin/master
 	find = {
 		active = true
 		priority = 25
 		defaultAction = null
 	}
+<<<<<<< HEAD
 	profilermarkers = {
 		active = false
 		priority = 100
@@ -48,6 +69,26 @@ providers = {
 	packages = {
 		active = true
 		priority = 90
+=======
+	log = {
+		active = false
+		priority = 210
+		defaultAction = null
+	}
+	packages = {
+		active = true
+		priority = 90
+		defaultAction = null
+	}
+	performance = {
+		active = false
+		priority = 100
+		defaultAction = null
+	}
+	profilermarkers = {
+		active = false
+		priority = 100
+>>>>>>> origin/master
 		defaultAction = null
 	}
 	scene = {

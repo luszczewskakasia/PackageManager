@@ -20,6 +20,7 @@
 //// <author>Tim F. Rieck</author>
 //// <date>28/11/2016 22:00 PM</date>
 
+<<<<<<< HEAD
 //using UnityEngine;
 //using System.Collections;
 //using RESTfulHTTPServer;
@@ -130,6 +131,8 @@
 // </copyright>
 // <author>Tim F. Rieck</author>
 // <date>28/11/2016 22:00 PM</date>
+=======
+>>>>>>> origin/master
 
 using UnityEngine;
 using System.Collections;
@@ -159,6 +162,9 @@ public class ServerInit : MonoBehaviour
         // ------------------------------
 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/master
         // 1. Create the routing table
         // HTTP Type 	 - URL routing path with variables 	- Class and method to be called
         // HTTP Type     - /foo/bar/{variable}   			- DelegetorClass.MethodToBeCalled
@@ -166,6 +172,7 @@ public class ServerInit : MonoBehaviour
         routingManager.AddRoute(new Route(Route.Type.GET, "/color/{objname}", "MaterialInvoke.GetColor"));
         routingManager.AddRoute(new Route(Route.Type.POST, "/color/{objname}", "MaterialInvoke.SetColor"));
         routingManager.AddRoute(new Route(Route.Type.DELETE, "/color/{objname}", "MaterialInvoke.DeleteColor"));
+<<<<<<< HEAD
 =======
 		// 1. Create the routing table
 		// HTTP Type 	 - URL routing path with variables 	- Class and method to be called
@@ -182,13 +189,23 @@ public class ServerInit : MonoBehaviour
 
         // symulacja
         routingManager.AddRoute(new Route(Route.Type.GET, "/sort/{objname}", "SortInvoker.Get"));
+=======
+
+        // symulacja
+        routingManager.AddRoute(new Route(Route.Type.GET, "/sim/{objname}", "SimulationInvoker.Get")); // pobiera dane o wizualizacji
+        routingManager.AddRoute(new Route(Route.Type.POST, "/sim/{objname}", "SimulationInvoker.Set")); // ustawia całą scenę na nowo
+        routingManager.AddRoute(new Route(Route.Type.PUT, "/sim/{objname}", "SimulationInvoker.Put")); // dodaje nowy magazyn, dodaje linie produkcyjną która do niego prowadzi
+        routingManager.AddRoute(new Route(Route.Type.PUT, "/sim/delete/{objname}", "SimulationInvoker.Delete")); // usuwa magazyn po ID oraz linię produkcyjną
+>>>>>>> origin/master
+
+        // linia sortująca
+        routingManager.AddRoute(new Route(Route.Type.POST, "/sort/{objname}", "SortInvoker.create"));// tworzy główną linię sortowania
 
         // Paczki
-        routingManager.AddRoute(new Route(Route.Type.GET, "/pack/{objname}", "PackagesInvoker.Get"));
-        routingManager.AddRoute(new Route(Route.Type.POST, "/pack/{objname}", "PackagesInvoker.Set"));
-        routingManager.AddRoute(new Route(Route.Type.DELETE, "/pack/{objname}", "PackagesInvoker.DELETE"));
-        routingManager.AddRoute(new Route(Route.Type.PUT, "/pack/{objname}", "PackagesInvoker.PUT"));
-
+        routingManager.AddRoute(new Route(Route.Type.GET, "/pack/{objname}", "PackagesInvoker.Get")); // Zwraca liste nieposortowanych paczek
+        routingManager.AddRoute(new Route(Route.Type.POST, "/pack/search", "PackagesInvoker.Search")); // Wyszukuje paczki po ID podświetla ją w magazynie
+        routingManager.AddRoute(new Route(Route.Type.PUT, "/pack/remove", "PackagesInvoker.Remove")); // kurier usuwa paczki
+        routingManager.AddRoute(new Route(Route.Type.PUT, "/pack/{objname}", "PackagesInvoker.Put")); //Dodaje paczki na linię sortującą
 
         // Starts the Simple REST Server
         // With or without basic authorisation flag
