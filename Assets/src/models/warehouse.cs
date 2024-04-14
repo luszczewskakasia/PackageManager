@@ -25,8 +25,7 @@ public class warehouse:MonoBehaviour
     public float LocationX;
     public float LocationY;
     public float rotation;
-    [JsonIgnore]
-    public bool useGUILayout;
+
 
     public warehouse(string Destination, float LocationX, float LocationY, float rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
     {
@@ -70,14 +69,17 @@ public class warehouse:MonoBehaviour
         return this;
     }
 
-    public void Add_MeshObject(GameObject InstanceS, GameObject InstanceML,float MLwidth, float MLlength, float MLheigth) 
+    public void Add_MeshObject(GameObject InstanceML,float MLwidth, float MLlength, float MLheigth,int ID) 
     {
         float start_x = this.LocationX - 2.5f * MLlength - 1.5f * MLheigth;
         float incrementation;
         float new_rotation;
         float new_y;
 
-        for (int current_column_number = 0; current_column_number < 14; current_column_number++)
+        GameObject instantiatedObject = new GameObject($"Warehouse{this.Destination}{ID}");
+
+
+        for (int current_column_number = 0; current_column_number < 4; current_column_number++)
         {
             if (current_column_number % 4 < 2)
             {
@@ -99,10 +101,12 @@ public class warehouse:MonoBehaviour
                 {
                     new_y = this.LocationY + current_row_number * MLlength;
                 }
-                for (int hight_number = 0; hight_number < 5; hight_number++) 
+                for (int hight_number = 0; hight_number < 1; hight_number++) 
                 {
 
                     GameObject InstanceWarehouse = Instantiate(InstanceML, new Vector3(start_x, 1f + hight_number* MLheigth, new_y), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
+                    InstanceWarehouse.name = $"Shelf{4*(current_row_number-1)+current_column_number+(4+4)*hight_number}";
+                    InstanceWarehouse.transform.SetParent(instantiatedObject.transform);
                 }
             }
 
@@ -112,7 +116,6 @@ public class warehouse:MonoBehaviour
             }
 
         }
-        this.instantiatedObject = InstanceS;    
     }
 
     public void UpdateMeshRotation(float posX, float posY)
