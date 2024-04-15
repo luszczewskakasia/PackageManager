@@ -125,7 +125,7 @@ namespace RESTfulHTTPServer.src.invoker
                     catch (Exception e)
                     {
                         valid = false;
-                        string msg = "Error: "+ e.ToString();
+                        string msg = "Error: " + e.ToString();
                         responseData = msg;
 
                         RESTfulHTTPServer.src.controller.Logger.Log(TAG, msg);
@@ -169,7 +169,3 @@ namespace RESTfulHTTPServer.src.invoker
         }
     }
 }
-
-
-
-
