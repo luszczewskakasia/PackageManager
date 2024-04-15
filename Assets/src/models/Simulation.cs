@@ -90,16 +90,22 @@ public class Simulation: MonoBehaviour
     }
 
     public void Delete_Warehouse(int keyToRemove)
-    { 
-        Destroy(this.Warehouses[keyToRemove].instantiatedObject);
-        Warehouses.Remove(keyToRemove);    
+    {
+        if (Warehouses.ContainsKey(keyToRemove))
+        {
+            string objectNameToDelete = $"Warehouse{Warehouses[keyToRemove].Destination}{keyToRemove}";
+            GameObject objectToDelete = GameObject.Find(objectNameToDelete);
+            if (objectToDelete != null)
+            {
+                Destroy(objectToDelete);
+            }
+            Warehouses.Remove(keyToRemove);
+        }
     }
 
     public string ToJson()
     {
         string sb = "{ \"Warehouses\": [";
-
-        // Iteracja po wszystkich kluczach w s³owniku Warehouses
         foreach (int key in Warehouses.Keys)
         {
             warehouse warehouse_ = Warehouses[key];
