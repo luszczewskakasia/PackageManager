@@ -243,12 +243,6 @@ namespace RESTfulHTTPServer.src.invoker
                     try
                     {
                         ID_List_To_Delete ids = JsonConvert.DeserializeObject<ID_List_To_Delete>(json);
-                        //Simulation sim = JsonConvert.DeserializeObject<Simulation>(json);
-
-                        //List<int>  ids = new List<int>();
-                        //ids.Add(0);
-                        //ids.Add(1);
-
                         Simulation Current_sim = gameObject.GetComponent<Simulation>();
 
                         foreach (int i in ids.IDs)
