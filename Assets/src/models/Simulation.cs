@@ -58,7 +58,7 @@ public class Simulation: MonoBehaviour
 
         for (int i = 0; i < 1; i++)
         {
-            this.Add_warehouse(new warehouse("Krk", (float)(i*10), (float)(i * 10), (float)(i * 3), i+50, i+50, i+50));
+            this.Add_warehouse(new warehouse("Krk", (float)(i*10), (float)(i * 10), (float)(i * 3), i+150, i+150, i+150));
         }
         this.Line_start_x = 0f;
         this.Line_start_y = 0f;
