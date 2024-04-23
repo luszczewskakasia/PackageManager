@@ -58,7 +58,7 @@ public class Simulation: MonoBehaviour
 
         for (int i = 0; i < 1; i++)
         {
-            this.Add_warehouse(new warehouse("Krk", (float)(i*10), (float)(i * 10), (float)(i * 3), i+150, i+150, i+150));
+            this.Add_warehouse(new warehouse("Krk", (0), (0), (float)(i * 3), i+150, i+150, i+150));
         }
         this.Line_start_x = 0f;
         this.Line_start_y = 0f;
@@ -88,6 +88,10 @@ public class Simulation: MonoBehaviour
         this.Warehouses[last_id] = New_Whouse;
         last_id++;
     }
+    //public void Add_wall()
+    //{
+
+    //}
 
     public void Delete_Warehouse(int keyToRemove)
     {

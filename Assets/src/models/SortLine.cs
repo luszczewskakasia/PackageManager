@@ -64,32 +64,33 @@ public class SortLine:MonoBehaviour
         Node_Connections = new Dictionary<int, List<Edge>>();
         this.SortLine_Mesh = new GameObject("Sort_Line");
 
-        Add_new_point(new Node(7, 0, 0));
+        //x, y, dir 
         Add_new_point(new Node(0, 0, 0));
-        Add_new_point(new Node(0, 6, 0));
-        Add_new_point(new Node(0, -5, 0));
-        Add_new_point(new Node(5, -5, 0));
-        Add_new_point(new Node(0, -7, 0));
-        Add_new_point(new Node(-2, -7, 0));
-        Add_new_point(new Node(0, -9, 0));
-        Add_new_point(new Node(2, 6, 0));
-        Add_new_point(new Node(-3, 6, 0));
-        Add_new_point(new Node(-3, 1, 0));
-        Add_new_point(new Node(-6, 1, 0));
-        Add_new_point(new Node(-3, 0, 0));
+        Add_new_point(new Node(-5, -2, 0));
+        Add_new_point(new Node(0, -3, 0));
+        Add_new_point(new Node(5, -4, 0));
+        Add_new_point(new Node(3, -4, 0));
+        Add_new_point(new Node(0, -4, 0));
+        Add_new_point(new Node(-1, -10, 0));
+        Add_new_point(new Node(3, -10, 0));
+        Add_new_point(new Node(3, -6, 0));
+        Add_new_point(new Node(7, -13, 0));
+        Add_new_point(new Node(6, -13, 0));
+        Add_new_point(new Node(6, -6, 0)); 
+        Add_new_point(new Node(-5, -3, 0));
 
-        Add_new_edge(1, 2);
-        Add_new_edge(2, 3); 
-        Add_new_edge(2,4);
-        Add_new_edge(2, 13);
-        Add_new_edge(3, 9);
-        Add_new_edge(3, 10);
-        Add_new_edge(4, 5);
-        Add_new_edge(4, 6);
-        Add_new_edge(6, 7);
-        Add_new_edge(6, 8);
-        Add_new_edge(13, 11);
-        Add_new_edge(11, 12);
+        Add_new_edge(1, 3);
+        Add_new_edge(3, 13); 
+        Add_new_edge(13, 2);
+        Add_new_edge(3, 6);
+        Add_new_edge(6, 5);
+        Add_new_edge(5, 4);
+        Add_new_edge(5, 9);
+        Add_new_edge(9, 12);
+        Add_new_edge(12, 11);
+        Add_new_edge(11, 10);
+        Add_new_edge(9, 8);
+        Add_new_edge(8, 7);
 
 
     }        
