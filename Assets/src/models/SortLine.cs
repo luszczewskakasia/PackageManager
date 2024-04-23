@@ -107,7 +107,7 @@ public class SortLine:MonoBehaviour
 
         Node_vertices.Add(VertexData);
         Node_Connections[Node_vertices.Count]= new List<Edge>();
-        Debug.Log($"Nowy punkt {Node_vertices[Node_vertices.Count - 1].x}, {Node_vertices[Node_vertices.Count - 1].y}");
+        //Debug.Log($"Nowy punkt {Node_vertices[Node_vertices.Count - 1].x}, {Node_vertices[Node_vertices.Count - 1].y}");
 
     }
 
@@ -154,7 +154,7 @@ public class SortLine:MonoBehaviour
                 case -1: current_x = StartNode.x; current_y = StartNode.y - i; break;
             }
 
-            Debug.Log($"X: {current_x}, Y:{current_y}");
+            //Debug.Log($"X: {current_x}, Y:{current_y}");
 
             if (i != 0)
             {
@@ -165,7 +165,7 @@ public class SortLine:MonoBehaviour
             }
         }
         Location = new Vector3(StartNode.x * normilize_field_size, 1, StartNode.y * normilize_field_size);
-        Debug.Log($"Iloœæ krawêdzi dla punktu {StartIndex}: {Node_Connections[StartIndex].Count}");
+        //Debug.Log($"Iloœæ krawêdzi dla punktu {StartIndex}: {Node_Connections[StartIndex].Count}");
 
         switch (Node_Connections[StartIndex].Count)
         {
@@ -209,7 +209,7 @@ public class SortLine:MonoBehaviour
 
                     CorrectCross = (LeftSide) ? CrossLeft_Mesh : CrossRight_Mesh;
                     rotationX = (LeftSide) ? 90f : 270f;
-                    Debug.Log($"Skrêt {LeftSide} ");
+                    //Debug.Log($"Skrêt {LeftSide} ");
                 }
                 if (Edge1Dir == -Edge2Dir)
                 {

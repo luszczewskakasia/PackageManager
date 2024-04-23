@@ -56,10 +56,11 @@ public class Simulation: MonoBehaviour
 
         this.Warehouses = new Dictionary<int, warehouse>();
 
-        for (int i = 0; i < 1; i++)
-        {
-            this.Add_warehouse(new warehouse("Krk", (-5), (-2), (float)(i * 3), i+50, i+100, i+100));
-        }
+        this.Add_warehouse(new warehouse("Krk", (7), (-13), 90f, 250, 250, 250));
+        this.Add_warehouse(new warehouse("WWa", (-5), (-2), 0f, 50, 50, 50));
+        this.Add_warehouse(new warehouse("WWa", (5), (-4), 90f, 50, 50, 50));
+        this.Add_warehouse(new warehouse("WWa", (-1), (-10), -90f, 350, 350, 350));
+
         this.Line_start_x = 0f;
         this.Line_start_y = 0f;
         this.sort_method = "Destination";
