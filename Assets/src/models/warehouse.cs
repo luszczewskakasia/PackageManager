@@ -114,11 +114,11 @@ public class warehouse:MonoBehaviour
         float offset_l = 0;
 
         if (length_ % 2 == 0) {
-            offset_l = -((length_ * MLlength + (MLlength + 16f) / 2);
+            offset_l = -(length_ * MLlength + (MLlength + 16f) / 2);
         }
         else
         {
-            offset_l = -((length_ * MLlength + (MLlength + 16f) - (MLlength + 16f - MLlength/4) / 2);
+            offset_l = -(length_ * MLlength + (MLlength + 16f) - (MLlength + 16f - MLlength/4) / 2);
         }
         int path_l = length_ / 2;
         for (int l_index = 0; l_index < length_; l_index++)
