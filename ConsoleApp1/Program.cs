@@ -10,40 +10,64 @@ public class Program
         int y1 = -7;
         int x2 = 0;
         int y2 = 0;
-        var (new_x, new_y) = Vertices.NewVertex(x1, y1, x2, y2);
-        Console.WriteLine($"New Vertex: ({new_x}, {new_y})");
+        int rotation = 3;
+        List<(int, int)> result = Vertices.NewVertex(x1, y1, x2, y2, rotation);
+        foreach (var point in result)
+        {
+            Console.WriteLine($"({point.Item1}, {point.Item2})");
+        }
 
     }
 }
 public class Vertices
 {
-    public static (int new_x, int new_y) NewVertex(int x1, int y1, int x2, int y2 )
+    public static List<(int, int)> NewVertex(int x1, int y1, int x2, int y2, int rotation)
     {
-        int new_x, new_y;
+        int new_x = x1, new_y = y1;
+        List<(int, int)> points = new List<(int, int)>();
         // case gdy krótsza ściana jest na osi x
         // czyli trzeba znaleźć boki krótszej ściany z sprawdzić czy zmeiniają się dla x czy dla y. jak dla X, to to jest
         // ten case
-        //if (x1 == x2)
-        //{
-        //    new_x = x1;
-        //    new_y = y1;
-        //}
-        //else
-        //{
-        //    if (y1 < 0)
-        //    {
-        //        y1 += 1;
-        //    }
-        //    else
-        //    {
-        //        y1 -= 1;
-        //    }
-        //    // pośredni 
-        //    Console.Write($"Intermediate vertex: ({x1}, {y1})\n");
-        //    new_x = x2;
-        //    new_y = y1;
+        if (x1 == x2)
+        {
+            new_x = x1;
+            new_y = y1;
+        }
+        else
+        {
+            //wejście od góry
+            if (rotation == 0)
+            {
+                if (y1 < 0)
+                {
+                    y1 += 1;
+                }
+                else
+                {
+                    y1 -= 1;
+                } 
+                new_x = x2;
+                new_y = y1;
 
-        //}
+            }
+            //wejście od dołu
+            else if (rotation == 2)
+            {
+                if (y1 < 0)
+                {
+                    y1 -= 1;
+                }
+                else
+                {
+                    y1 += 1;
+                }
+                new_x = x2;
+                new_y = y1;
+
+            }
+
+
+        }
         //case gdy sciana jest na osi y
 
         if (y1 == y2)
@@ -53,25 +77,41 @@ public class Vertices
         }
         else
         {
-            //tu trzeba jeszcze dorzucić przypadek jak ten kontener jest skierowany. Dla wjazdu linii od prawej jest git, bo to jest
-            //ten przypadek
-            //
-            //Dla wjazdu od prawej musi być na odwrót z tą inkrementacją i dekrementacją x.
-            // czyli czy to oznacza, że musimy znać współrzędne magazynu i na ich podstawie stworzyć ten kod? XD
-            if (x1 < 0)
+            //wejście od prawej
+            if (rotation == 1)
             {
-                x1 -= 1;
+                if (x1 < 0)
+                {
+                    x1 -= 1;
+                }
+                else
+                {
+                    x1 += 1;
+                }
+                new_x = x1;
+                new_y = y2;
             }
-            else
+            //wejście od lewej
+            else if (rotation == 3)
             {
-                x1 += 1;
+                if (x1 < 0)
+                {
+                    x1 += 1;
+                }
+                else
+                {
+                    x1 -= 1;
+                }
+                new_x = x2;
+                new_y = y1;
             }
-            Console.Write($"Intermediate vertex: ({x1}, {y1})\n");
-            new_x = x2;
-            new_y = y1;
+
 
         }
-        return (new_x, new_y);
+        points.Add((x1, y1));
+        points.Add((new_x, new_y));
+
+        return points;
 
     }
 }
