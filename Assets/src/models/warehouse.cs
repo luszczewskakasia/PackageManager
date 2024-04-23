@@ -108,13 +108,19 @@ public class warehouse:MonoBehaviour
         GameObject instantiatedObject = new GameObject($"Warehouse{this.Destination}{ID}");
         int shelf_counter = 0;
         int counter_offset_l = 0;
-        
+        float offset_l = 0;
         //ok na parzyste
-        float offset_l = -((length_*MLlength + ((length_/2)-1)*(MLlength + 16f))/2);
-        
+        if (length_ % 2 == 0) {
+            offset_l = -((length_ * MLlength + ((length_ / 2) - 1) * (MLlength + 16f)) / 2);
+        }
+        else
+        {
+            offset_l = -((length_ * MLlength + ((length_ / 2) - 1) * (MLlength + 16f)) - (MLlength + 16f - MLlength/4) / 2);
+        }
+
         // TODO: fix with Ceiling i Floor
-        //float offset_l = -((float)(Math.Ceiling(length_/2) + (float)(Math.Floor(length_ / 2)) * (MLlength + 16f)) / 2);
-        //int temp_offset_l = -((int)(Math.Ceiling(length_ / 2) + (int)(Math.Floor(length_ / 2)) * (MLlength + 16))) / 2;
+        //float offset_l = -(float)((Math.Ceiling((float)length_/2) + (Math.Floor((float)length_ / 2)) * (MLlength + 16f)) / 2);
+        //int temp_offset_l = -(Math.Ceiling(length_ / 2) + (Math.Floor(length_ / 2)) * (MLlength + 16)) / 2;
         //float offset_l = temp_offset_l;
 
 
@@ -132,7 +138,7 @@ public class warehouse:MonoBehaviour
                 offset_l += MLlength;
             }
 
-            float offset_w = (width_ * MLwidth + ((width_ / 2) * MLwidth)); //16f
+            float offset_w = 16f;// (width_ * MLwidth + ((width_ / 2) * MLwidth)); //16f
             for (int w_index = 0; w_index < width_; w_index++) 
             {
                 if (w_index % 2 == 0)
