@@ -181,7 +181,7 @@ public class warehouse:MonoBehaviour
         //krotsze
         GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube3.transform.position = new Vector3(wall_length/2, 8f, wall_width/2 + MLlength / 4);
-        cube3.transform.localScale = new Vector3(1f, 15f, wall_width- MLlength / 2+1);
+        cube3.transform.localScale = new Vector3(1f, 15f, wall_width - MLlength / 2 + 1);
 
         GameObject cube4 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         cube4.transform.position = new Vector3(-wall_length / 2, 8f, wall_width / 2 + MLlength / 4);
