@@ -89,10 +89,6 @@ public class Simulation: MonoBehaviour
         this.Warehouses[last_id] = New_Whouse;
         last_id++;
     }
-    //public void Add_wall()
-    //{
-
-    //}
 
     public void Delete_Warehouse(int keyToRemove)
     {
