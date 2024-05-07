@@ -166,6 +166,7 @@ namespace RESTfulHTTPServer.src.invoker
 
                 // Determine our object in the scene
                 GameObject gameObject = GameObject.Find(objname);
+
                 if (gameObject != null)
                 {
                     try
@@ -173,7 +174,9 @@ namespace RESTfulHTTPServer.src.invoker
                         warehouse Whouse = JsonConvert.DeserializeObject<warehouse>(json);
 
                         Simulation Current_sim = gameObject.GetComponent<Simulation>();
-                        Current_sim.Add_warehouse(Whouse);
+                        Current_sim.Add_warehouse(new warehouse(Whouse.Destination,Whouse.Grid_X,
+                            Whouse.Grid_Y,Whouse.Grid_rotation,Whouse.SmallPackagesSlots,Whouse.MediumPackagesSlots,
+                            Whouse.BigPackagesSlots));
 
 
                         responseData = json;

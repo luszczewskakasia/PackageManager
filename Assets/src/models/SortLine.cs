@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System;
+using System.Reflection;
+using UnityEditor.Experimental.GraphView;
 
 [System.Serializable]
 
@@ -23,7 +25,9 @@ public struct Node
 {
     public int x; 
     public int y; 
-    public int Input_dir; 
+    public int Input_dir;
+    public bool final;
+    public int from_;
 
     // Konstruktor
     public Node(int x_, int y_, int val)
@@ -32,12 +36,18 @@ public struct Node
         y = y_;
 
         Input_dir = val;
+        final = false;
+        from_ = -1;
     }
+
+
 }
 
 
-public class SortLine:MonoBehaviour
-{ 
+
+
+public class SortLine : MonoBehaviour
+{
     public List<Node> Node_vertices;
     public Dictionary<int, List<Edge>> Node_Connections;
     public float normilize_field_size;
@@ -58,73 +68,48 @@ public class SortLine:MonoBehaviour
     private GameObject SortLine_Mesh;
 
 
-    public void Start() 
+    public void Awake()
     {
-        Node_vertices = new List<Node>();
-        Node_Connections = new Dictionary<int, List<Edge>>();
+        this.Node_vertices = new List<Node>();
+        this.Node_Connections = new Dictionary<int, List<Edge>>();
+        Add_new_point(new Node(0, 0, 0));
         this.SortLine_Mesh = new GameObject("Sort_Line");
 
-        //x, y, dir 
-        Add_new_point(new Node(0, 0, 0));
-        Add_new_point(new Node(-5, -2, 0));
-        Add_new_point(new Node(0, -3, 0));
-        Add_new_point(new Node(5, -4, 0));
-        Add_new_point(new Node(3, -4, 0));
-        Add_new_point(new Node(0, -4, 0));
-        Add_new_point(new Node(-1, -10, 0));
-        Add_new_point(new Node(3, -10, 0));
-        Add_new_point(new Node(3, -6, 0));
-        Add_new_point(new Node(7, -13, 0));
-        Add_new_point(new Node(6, -13, 0));
-        Add_new_point(new Node(6, -6, 0)); 
-        Add_new_point(new Node(-5, -3, 0));
+    }
 
-        Add_new_edge(1, 3);
-        Add_new_edge(3, 13); 
-        Add_new_edge(13, 2);
-        Add_new_edge(3, 6);
-        Add_new_edge(6, 5);
-        Add_new_edge(5, 4);
-        Add_new_edge(5, 9);
-        Add_new_edge(9, 12);
-        Add_new_edge(12, 11);
-        Add_new_edge(11, 10);
-        Add_new_edge(9, 8);
-        Add_new_edge(8, 7);
+    public void Start()
+    {
+    }
 
 
-    }        
-
-
-    public void Update() 
+    public void Update()
     {
     }
 
 
 
-    public void Add_new_point(Node VertexData) 
+    public void Add_new_point(Node VertexData)
     {
 
-        Node_vertices.Add(VertexData);
-        Node_Connections[Node_vertices.Count]= new List<Edge>();
-        //Debug.Log($"Nowy punkt {Node_vertices[Node_vertices.Count - 1].x}, {Node_vertices[Node_vertices.Count - 1].y}");
+        this.Node_vertices.Add(VertexData);
+        this.Node_Connections[Node_vertices.Count] = new List<Edge>();
 
     }
 
     public void Add_new_edge(int StartIndex, int StopIndex)
     {
-        int diff=0;
-        float rotation =0;
+        int diff = 0;
+        float rotation = 0;
         int dir = 0;
 
-        Node StartNode = Node_vertices[StartIndex - 1];
-        Node StopNode = Node_vertices[StopIndex - 1];
+        Node StartNode = this.Node_vertices[StartIndex - 1];
+        Node StopNode = this.Node_vertices[StopIndex - 1];
 
         try
         {
             if (StartNode.x == StopNode.x)
             {
-                diff =StopNode.y - StartNode.y;
+                diff = StopNode.y - StartNode.y;
                 dir = (diff > 0) ? 1 : -1;
                 rotation = 90f;
             }
@@ -134,18 +119,19 @@ public class SortLine:MonoBehaviour
                 dir = (diff > 0) ? 2 : -2;
                 rotation = 0f;
             }
-            Node_Connections[StartIndex].Add(new Edge(dir,StopIndex));
+            Node_Connections[StartIndex].Add(new Edge(dir, StopIndex));
+            StopNode.from_ = StartIndex;
             StopNode.Input_dir = dir;
-            Node_vertices[StopIndex - 1] = StopNode; 
+            this.Node_vertices[StopIndex - 1] = StopNode;
         }
-        catch (Exception e) { return;}
+        catch (Exception e) { return; }
         Vector3 Location = new Vector3();
         GameObject Egde_ = this.SortLine_Mesh;
         GameObject LinePart = null;
-        for (int i = 0; i < Math.Abs(diff)+1; i++)
+        for (int i = 0; i < Math.Abs(diff) + 1; i++)
         {
-            int current_x=0;
-            int current_y=0;
+            int current_x = 0;
+            int current_y = 0;
             switch (dir)
             {
                 case 2: current_x = StartNode.x + i; current_y = StartNode.y; break;
@@ -154,7 +140,6 @@ public class SortLine:MonoBehaviour
                 case -1: current_x = StartNode.x; current_y = StartNode.y - i; break;
             }
 
-            //Debug.Log($"X: {current_x}, Y:{current_y}");
 
             if (i != 0)
             {
@@ -165,7 +150,7 @@ public class SortLine:MonoBehaviour
             }
         }
         Location = new Vector3(StartNode.x * normilize_field_size, 1, StartNode.y * normilize_field_size);
-        //Debug.Log($"Iloœæ krawêdzi dla punktu {StartIndex}: {Node_Connections[StartIndex].Count}");
+
 
         switch (Node_Connections[StartIndex].Count)
         {
@@ -209,7 +194,6 @@ public class SortLine:MonoBehaviour
 
                     CorrectCross = (LeftSide) ? CrossLeft_Mesh : CrossRight_Mesh;
                     rotationX = (LeftSide) ? 90f : 270f;
-                    //Debug.Log($"Skrêt {LeftSide} ");
                 }
                 if (Edge1Dir == -Edge2Dir)
                 {
@@ -245,41 +229,38 @@ public class SortLine:MonoBehaviour
                 LinePart.transform.SetParent(Egde_.transform);
 
                 break;
-        
+
         }
-
-
-    //    if (Node_Connections[StartIndex].Count == 2)
-    //    {
-    //        int Edge_1dir = Node_Connections[StartIndex][0].dir;
-    //        int Edge_2dir = Node_Connections[StartIndex][1].dir;
-
-
-    //        if (Edge_1dir == 2) { rotation = 0f; }
-    //        if (Edge_1dir == 1 ) { rotation = 90f; }
-    //        if (Edge_2dir == 0 ) { rotation = 180f; }
-    //        if (Edge_2dir == 3) { rotation = 270f; }
-
-
-    //        GameObject LinePart = Instantiate(CrossLeft_Mesh, new Vector3((Node_vertices[StartIndex - 1].x) * normilize_field_size, 1, Node_vertices[StartIndex - 1].y * normilize_field_size), Quaternion.Euler(new Vector3(0, rotation, -90)));
-    //        LinePart.name = $"Edge{StartIndex}-{StopIndex}_cross";
-    //        LinePart.transform.SetParent(this.SortLine_Mesh.transform);
-    //    }
-
-
     }
 
-
-
+    public float Node_Distance(Node start, Node stop)
+    {
+        return (float)Math.Sqrt(Math.Pow((stop.x - start.x), 2) + Math.Pow((stop.y - start.y), 2));
+    }
+    public int NearestVertexIndex(Node new_Vertex)
+    {
+        if (this.Node_vertices.Count == 1) { return 0;}
+        int index = 0;
+        float distance = float.MaxValue;
+        Node currently_closest_Node = this.Node_vertices[index];
+        for (int i = 0; i < this.Node_vertices.Count; i++) 
+        {
+            float new_distance = Node_Distance(new_Vertex, this.Node_vertices[i]);
+            if (new_distance  < distance && !this.Node_vertices[i].final) 
+            {
+                index = i; 
+                distance = new_distance;
+            }
+        }
+        return index;
+    }
+        
 
     public void Delete_old_segment(string objectNameToDelete)
     {
 
         GameObject ParentLine = GameObject.Find("Sort_Line");
-
         Transform childTransform = ParentLine.transform.Find(objectNameToDelete);
-
-        Debug.Log($"{childTransform}");
 
         if (childTransform != null)
         {
@@ -289,42 +270,172 @@ public class SortLine:MonoBehaviour
     }
 
 
+    public void NewVertex(int x2, int y2, int rotation)
+    {
 
+        Node new_Node = new Node(x2, y2, 0);
+        new_Node.final = true;
+        int Old_node_index = NearestVertexIndex(new_Node);
+        Node Closest_node = this.Node_vertices[Old_node_index];
+        int x1 = Closest_node.x;
+        int y1 = Closest_node.y;
+        int new_x = x1, new_y = y1;
+
+        // case gdy krótsza œciana jest na osi x
+        // czyli trzeba znaleŸæ boki krótszej œciany z sprawdziæ czy zmeiniaj¹ siê dla x czy dla y. jak dla X, to to jest
+        // ten case
+        if (x1 == x2)
+        {
+            new_x = x1;
+            new_y = y1;
+        }
+        else
+        {
+            //wejœcie od góry
+            if (rotation == -2)
+            {
+                if (y1 < 0)
+                {
+                    y1 += 1;
+                }
+                else
+                {
+                    y1 -= 1;
+                }
+                new_x = x2;
+                new_y = y1;
+
+            }
+            //wejœcie od do³u
+            else if (rotation == 2)
+            {
+                if (y1 < 0)
+                {
+                    y1 -= 1;
+                }
+                else
+                {
+                    y1 += 1;
+                }
+                new_x = x2;
+                new_y = y1;
+
+            }
+        }
+        //case gdy sciana jest na osi y
+        if (y1 == y2)
+        {
+            new_x = x1;
+            new_y = y1;
+        }
+        else
+        {
+            //wejœcie od prawej
+            if (rotation == 1)
+            {
+                if (x1 < 0)
+                {
+                    x1 -= 1;
+                }
+                else
+                {
+                    x1 += 1;
+                }
+                new_x = x1;
+                new_y = y2;
+            }
+            //wejœcie od lewej
+            else if (rotation == -1)
+            {
+                if (x1 < 0)
+                {
+                    x1 += 1;
+                }
+                else
+                {
+                    x1 -= 1;
+                }
+                new_x = x2;
+                new_y = y1;
+            }
+        }
+
+
+        Add_new_point(new_Node);
+        int warehouse_Node_index = this.Node_vertices.Count;
+        Add_new_point(new Node(new_x, new_y,0));
+        int mid_Node_index = this.Node_vertices.Count;
+        Add_new_edge(Old_node_index + 1, mid_Node_index);
+        Add_new_edge(mid_Node_index, warehouse_Node_index);
+
+        string json = "";
+        json += "\"Node_Connections\":{";
+        int index = 0;
+        foreach (var kvp in Node_Connections)
+        {
+            json += "\"" + kvp.Key.ToString() + "\":[";
+            for (int i = 0; i < kvp.Value.Count; i++)
+            {
+                json += $"{kvp.Value[i].target}";
+                if (i < kvp.Value.Count - 1)
+                    json += ",";
+            }
+            json += "]";
+            if (index < Node_Connections.Count - 1)
+                json += ",";
+            index++;
+        }
+        json += "}}\n\n";
+
+        for (int i = 0; i < this.Node_vertices.Count; i++) 
+        {
+            json += $"{i}: x: {Node_vertices[i].x}, y: {Node_vertices[i].y}\n";
+        }
+
+
+
+
+        Debug.Log($"{json}");
+    }
+
+
+
+
+    public void ReplaceEgde(Edge Old_connection, int StartNodeIndex, int StopNodeIndex, Node NewMidPoint) 
+    {
+        NewMidPoint.from_ = StartNodeIndex;
+        Add_new_point(NewMidPoint);
+        int NewMidPoint_Index = this.Node_vertices.Count;
+        Old_connection.target = NewMidPoint_Index;
+        Node StopNode = this.Node_vertices[StopNodeIndex-1];
+        StopNode.from_ = NewMidPoint_Index;
+        NewMidPoint.Input_dir = StopNode.Input_dir;
+        this.Node_vertices[StopNodeIndex-1] = StopNode;
+        Add_new_edge(NewMidPoint_Index, StopNodeIndex);
+
+    }
 
 
     public string Serialize()
     {
-        string json = "{\"Node_vertices\":[";
-        //for (int i = 0; i < Node_vertices.Count; i++)
-        //{
-        //    json += "[";
-        //    for (int j = 0; j < Node_vertices[i].Count; j++)
-        //    {
-        //        json += Node_vertices[i][j].ToString();
-        //        if (j < Node_vertices[i].Count - 1)
-        //            json += ",";
-        //    }
-        //    json += "]";
-        //    if (i < Node_vertices.Count - 1)
-        //        json += ",";
-        //}
-        //json += "],\"Node_Connections\":{";
-        //int index = 0;
-        //foreach (var kvp in Node_Connections)
-        //{
-        //    json += "\"" + kvp.Key.ToString() + "\":[";
-        //    for (int i = 0; i < kvp.Value.Count; i++)
-        //    {
-        //        json += kvp.Value[i].ToString();
-        //        if (i < kvp.Value.Count - 1)
-        //            json += ",";
-        //    }
-        //    json += "]";
-        //    if (index < Node_Connections.Count - 1)
-        //        json += ",";
-        //    index++;
-        //}
-        //json += "}}";
+        string json ="";
+        json += "\"Node_Connections\":{";
+        int index = 0;
+        foreach (var kvp in Node_Connections)
+        {
+            json += "\"" + kvp.Key.ToString() + "\":[";
+            for (int i = 0; i < kvp.Value.Count; i++)
+            {
+                json += $"{kvp.Value[i].target}";
+                if (i < kvp.Value.Count - 1)
+                    json += ",";
+            }
+            json += "]";
+            if (index < Node_Connections.Count - 1)
+                json += ",";
+            index++;
+        }
+        json += "}}";
 
         return json;
     }
