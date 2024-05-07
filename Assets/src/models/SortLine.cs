@@ -33,11 +33,18 @@ public struct Node
 
         Input_dir = val;
     }
+
+    public static float operator &(Node start, Node stop)
+    {
+        return (float)Math.Sqrt(Math.Pow((stop.x - start.x),2)+ Math.Pow((stop.y - start.y), 2));
+    }
 }
 
 
-public class SortLine:MonoBehaviour
-{ 
+
+
+public class SortLine : MonoBehaviour
+{
     public List<Node> Node_vertices;
     public Dictionary<int, List<Edge>> Node_Connections;
     public float normilize_field_size;
@@ -58,7 +65,7 @@ public class SortLine:MonoBehaviour
     private GameObject SortLine_Mesh;
 
 
-    public void Start() 
+    public void Start()
     {
         Node_vertices = new List<Node>();
         Node_Connections = new Dictionary<int, List<Edge>>();
@@ -73,14 +80,14 @@ public class SortLine:MonoBehaviour
         Add_new_point(new Node(0, -4, 0));
         Add_new_point(new Node(-1, -10, 0));
         Add_new_point(new Node(3, -10, 0));
-        Add_new_point(new Node(3, -6, 0));
+        Add_new_point(new Node(3, -8, 0));
         Add_new_point(new Node(7, -13, 0));
         Add_new_point(new Node(6, -13, 0));
-        Add_new_point(new Node(6, -6, 0)); 
+        Add_new_point(new Node(6, -8, 0));
         Add_new_point(new Node(-5, -3, 0));
 
         Add_new_edge(1, 3);
-        Add_new_edge(3, 13); 
+        Add_new_edge(3, 13);
         Add_new_edge(13, 2);
         Add_new_edge(3, 6);
         Add_new_edge(6, 5);
@@ -93,28 +100,28 @@ public class SortLine:MonoBehaviour
         Add_new_edge(8, 7);
 
 
-    }        
+    }
 
 
-    public void Update() 
+    public void Update()
     {
     }
 
 
 
-    public void Add_new_point(Node VertexData) 
+    public void Add_new_point(Node VertexData)
     {
 
         Node_vertices.Add(VertexData);
-        Node_Connections[Node_vertices.Count]= new List<Edge>();
+        Node_Connections[Node_vertices.Count] = new List<Edge>();
         //Debug.Log($"Nowy punkt {Node_vertices[Node_vertices.Count - 1].x}, {Node_vertices[Node_vertices.Count - 1].y}");
 
     }
 
     public void Add_new_edge(int StartIndex, int StopIndex)
     {
-        int diff=0;
-        float rotation =0;
+        int diff = 0;
+        float rotation = 0;
         int dir = 0;
 
         Node StartNode = Node_vertices[StartIndex - 1];
@@ -124,7 +131,7 @@ public class SortLine:MonoBehaviour
         {
             if (StartNode.x == StopNode.x)
             {
-                diff =StopNode.y - StartNode.y;
+                diff = StopNode.y - StartNode.y;
                 dir = (diff > 0) ? 1 : -1;
                 rotation = 90f;
             }
@@ -134,18 +141,18 @@ public class SortLine:MonoBehaviour
                 dir = (diff > 0) ? 2 : -2;
                 rotation = 0f;
             }
-            Node_Connections[StartIndex].Add(new Edge(dir,StopIndex));
+            Node_Connections[StartIndex].Add(new Edge(dir, StopIndex));
             StopNode.Input_dir = dir;
-            Node_vertices[StopIndex - 1] = StopNode; 
+            Node_vertices[StopIndex - 1] = StopNode;
         }
-        catch (Exception e) { return;}
+        catch (Exception e) { return; }
         Vector3 Location = new Vector3();
         GameObject Egde_ = this.SortLine_Mesh;
         GameObject LinePart = null;
-        for (int i = 0; i < Math.Abs(diff)+1; i++)
+        for (int i = 0; i < Math.Abs(diff) + 1; i++)
         {
-            int current_x=0;
-            int current_y=0;
+            int current_x = 0;
+            int current_y = 0;
             switch (dir)
             {
                 case 2: current_x = StartNode.x + i; current_y = StartNode.y; break;
@@ -245,31 +252,26 @@ public class SortLine:MonoBehaviour
                 LinePart.transform.SetParent(Egde_.transform);
 
                 break;
-        
+
         }
-
-
-    //    if (Node_Connections[StartIndex].Count == 2)
-    //    {
-    //        int Edge_1dir = Node_Connections[StartIndex][0].dir;
-    //        int Edge_2dir = Node_Connections[StartIndex][1].dir;
-
-
-    //        if (Edge_1dir == 2) { rotation = 0f; }
-    //        if (Edge_1dir == 1 ) { rotation = 90f; }
-    //        if (Edge_2dir == 0 ) { rotation = 180f; }
-    //        if (Edge_2dir == 3) { rotation = 270f; }
-
-
-    //        GameObject LinePart = Instantiate(CrossLeft_Mesh, new Vector3((Node_vertices[StartIndex - 1].x) * normilize_field_size, 1, Node_vertices[StartIndex - 1].y * normilize_field_size), Quaternion.Euler(new Vector3(0, rotation, -90)));
-    //        LinePart.name = $"Edge{StartIndex}-{StopIndex}_cross";
-    //        LinePart.transform.SetParent(this.SortLine_Mesh.transform);
-    //    }
-
-
     }
 
-
+    public int NearestVertexIndex(Node new_Vertex)
+    {
+        int index = 0;
+        float distance = float.MaxValue;
+        Node currently_closest_Node = this.Node_vertices[index];
+        for (int i = 0; i < this.Node_vertices.Count; i++) 
+        {
+            float new_distance = this.Node_vertices[index] & this.Node_vertices[i];
+            if (new_distance  < distance) 
+            {
+                currently_closest_Node = this.Node_vertices[index]; 
+                distance = new_distance;
+            }
+        }
+        return index;
+    }
 
 
     public void Delete_old_segment(string objectNameToDelete)
@@ -287,6 +289,96 @@ public class SortLine:MonoBehaviour
             DestroyImmediate(childObject);
         }
     }
+
+
+    public void NewVertex(int x1, int y1, int x2, int y2, int rotation)
+    {
+        int new_x = x1, new_y = y1;
+        List<(int, int)> points = new List<(int, int)>();
+        // case gdy krótsza œciana jest na osi x
+        // czyli trzeba znaleŸæ boki krótszej œciany z sprawdziæ czy zmeiniaj¹ siê dla x czy dla y. jak dla X, to to jest
+        // ten case
+        if (x1 == x2)
+        {
+            new_x = x1;
+            new_y = y1;
+        }
+        else
+        {
+            //wejœcie od góry
+            if (rotation == 0)
+            {
+                if (y1 < 0)
+                {
+                    y1 += 1;
+                }
+                else
+                {
+                    y1 -= 1;
+                }
+                new_x = x2;
+                new_y = y1;
+
+            }
+            //wejœcie od do³u
+            else if (rotation == 2)
+            {
+                if (y1 < 0)
+                {
+                    y1 -= 1;
+                }
+                else
+                {
+                    y1 += 1;
+                }
+                new_x = x2;
+                new_y = y1;
+
+            }
+        }
+        //case gdy sciana jest na osi y
+        if (y1 == y2)
+        {
+            new_x = x1;
+            new_y = y1;
+        }
+        else
+        {
+            //wejœcie od prawej
+            if (rotation == 1)
+            {
+                if (x1 < 0)
+                {
+                    x1 -= 1;
+                }
+                else
+                {
+                    x1 += 1;
+                }
+                new_x = x1;
+                new_y = y2;
+            }
+            //wejœcie od lewej
+            else if (rotation == 3)
+            {
+                if (x1 < 0)
+                {
+                    x1 += 1;
+                }
+                else
+                {
+                    x1 -= 1;
+                }
+                new_x = x2;
+                new_y = y1;
+            }
+        }
+        points.Add((x1, y1));
+        points.Add((new_x, new_y));
+
+    }
+
+
 
 
 
