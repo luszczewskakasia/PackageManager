@@ -36,8 +36,8 @@ public class Simulation: MonoBehaviour
     [JsonProperty]
     public Dictionary<int,warehouse> Warehouses { get; set; }
     public string sort_method;
-    public float Line_start_x;
-    public float Line_start_y;
+    public int Line_start_x;
+    public int Line_start_y;
     private int last_id = 0;
     [JsonIgnore]
     public GameObject Small_Mesh;
@@ -56,14 +56,34 @@ public class Simulation: MonoBehaviour
 
         this.Warehouses = new Dictionary<int, warehouse>();
 
-        this.Add_warehouse(new warehouse("Krk", (7), (-13), 90f, 250, 250, 250));
-        this.Add_warehouse(new warehouse("WWa", (-5), (-2), 0f, 50, 50, 50));
-        this.Add_warehouse(new warehouse("WWa", (5), (-4), 90f, 50, 50, 50));
-        this.Add_warehouse(new warehouse("WWa", (-1), (-10), -90f, 350, 350, 350));
+        // start
+        this.Add_warehouse(new warehouse("ODW", (-20), (0), -2, 50, 50, 50));
+        //this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
+        //this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("ODW", (0), (20), 1, 50, 50, 50));
+
+        //wokó³ górnego
+        this.Add_warehouse(new warehouse("GR", (-15), (35), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("GR", (-15), (15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("GR", (15), (20), 2, 50, 50, 50));
 
 
-        this.Line_start_x = 0f;
-        this.Line_start_y = 0f;
+        //wokó³ lewego
+        this.Add_warehouse(new warehouse("LEFT", (-20), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LEFT", (-20), (-15), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LEFT", (-35), (-15), -1, 50, 50, 50));
+
+        //wokó³ dolnego
+        //this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
+        //this.Add_warehouse(new warehouse("DOL", (15) , (-50), -1, 50, 50, 50));
+        //this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
+        //this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
+
+        //
+        this.Line_start_x = 0;
+        this.Line_start_y = 0;
         this.sort_method = "Destination";
     }
 
@@ -74,7 +94,7 @@ public class Simulation: MonoBehaviour
 
     public Dictionary<int, warehouse> GetList() { return Warehouses; }
     public void SetList(Dictionary<int, warehouse> data) { Warehouses = data; }
-    public void set_start(float x, float y) 
+    public void set_start(int x, int y) 
     {
         this.Line_start_x = x;
         this.Line_start_y = y;
@@ -90,10 +110,6 @@ public class Simulation: MonoBehaviour
         this.Warehouses[last_id] = New_Whouse;
         last_id++;
     }
-    //public void Add_wall()
-    //{
-
-    //}
 
     public void Delete_Warehouse(int keyToRemove)
     {
@@ -118,12 +134,17 @@ public class Simulation: MonoBehaviour
 
             sb += $"{key}:";
             sb += "{";
-            sb += $"\"Destination\": {warehouse_.Destination},";
+            sb += $"\"Destination\": \"{warehouse_.Destination}\",";
             sb += $"\"BigPackagesSlots\": {warehouse_.BigPackagesSlots},";
             sb += $"\"MediumPackagesSlots\": {warehouse_.MediumPackagesSlots},";
             sb += $"\"SmallPackagesSlots\": {warehouse_.SmallPackagesSlots},";
-            sb += $"\"LocationX\": {warehouse_.LocationX},";
-            sb += $"\"LocationY\": {warehouse_.LocationY}";
+            sb += $"\"Grid_X\": {warehouse_.Grid_X},";
+            sb += $"\"Grid_Y\": {warehouse_.Grid_Y},";
+            sb += $"\"MaxX\": {warehouse_.maxX},";
+            sb += $"\"MaxY\": {warehouse_.maxY},";
+            sb += $"\"MinX\": {warehouse_.minX},";
+            sb += $"\"MinY\": {warehouse_.minY},";
+            sb += $"\"Grid_rotation\": {warehouse_.Grid_rotation}";
             sb += "},"; 
         }
 

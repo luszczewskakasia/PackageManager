@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Text;
 using System;
+using System.Reflection;
+using UnityEditor.Experimental.GraphView;
 
 [System.Serializable]
 
@@ -23,7 +25,9 @@ public struct Node
 {
     public int x; 
     public int y; 
-    public int Input_dir; 
+    public int Input_dir;
+    public bool final;
+    public int from_;
 
     // Konstruktor
     public Node(int x_, int y_, int val)
@@ -32,12 +36,11 @@ public struct Node
         y = y_;
 
         Input_dir = val;
+        final = false;
+        from_ = -1;
     }
 
-    public static float operator &(Node start, Node stop)
-    {
-        return (float)Math.Sqrt(Math.Pow((stop.x - start.x),2)+ Math.Pow((stop.y - start.y), 2));
-    }
+
 }
 
 
@@ -65,41 +68,17 @@ public class SortLine : MonoBehaviour
     private GameObject SortLine_Mesh;
 
 
-    public void Start()
+    public void Awake()
     {
-        Node_vertices = new List<Node>();
-        Node_Connections = new Dictionary<int, List<Edge>>();
+        this.Node_vertices = new List<Node>();
+        this.Node_Connections = new Dictionary<int, List<Edge>>();
+        int x = Add_new_point(new Node(0, 0, 0));
         this.SortLine_Mesh = new GameObject("Sort_Line");
 
-        //x, y, dir 
-        Add_new_point(new Node(0, 0, 0));
-        Add_new_point(new Node(-5, -2, 0));
-        Add_new_point(new Node(0, -3, 0));
-        Add_new_point(new Node(5, -4, 0));
-        Add_new_point(new Node(3, -4, 0));
-        Add_new_point(new Node(0, -4, 0));
-        Add_new_point(new Node(-1, -10, 0));
-        Add_new_point(new Node(3, -10, 0));
-        Add_new_point(new Node(3, -8, 0));
-        Add_new_point(new Node(7, -13, 0));
-        Add_new_point(new Node(6, -13, 0));
-        Add_new_point(new Node(6, -8, 0));
-        Add_new_point(new Node(-5, -3, 0));
+    }
 
-        Add_new_edge(1, 3);
-        Add_new_edge(3, 13);
-        Add_new_edge(13, 2);
-        Add_new_edge(3, 6);
-        Add_new_edge(6, 5);
-        Add_new_edge(5, 4);
-        Add_new_edge(5, 9);
-        Add_new_edge(9, 12);
-        Add_new_edge(12, 11);
-        Add_new_edge(11, 10);
-        Add_new_edge(9, 8);
-        Add_new_edge(8, 7);
-
-
+    public void Start()
+    {
     }
 
 
@@ -109,13 +88,13 @@ public class SortLine : MonoBehaviour
 
 
 
-    public void Add_new_point(Node VertexData)
+    public int Add_new_point(Node VertexData)
     {
 
-        Node_vertices.Add(VertexData);
-        Node_Connections[Node_vertices.Count] = new List<Edge>();
-        //Debug.Log($"Nowy punkt {Node_vertices[Node_vertices.Count - 1].x}, {Node_vertices[Node_vertices.Count - 1].y}");
-
+        this.Node_vertices.Add(VertexData);
+        this.Node_Connections[Node_vertices.Count] = new List<Edge>();
+        Debug.Log($"Punkt{this.Node_vertices.Count}");
+        return this.Node_vertices.Count;
     }
 
     public void Add_new_edge(int StartIndex, int StopIndex)
@@ -124,8 +103,8 @@ public class SortLine : MonoBehaviour
         float rotation = 0;
         int dir = 0;
 
-        Node StartNode = Node_vertices[StartIndex - 1];
-        Node StopNode = Node_vertices[StopIndex - 1];
+        Node StartNode = this.Node_vertices[StartIndex - 1];
+        Node StopNode = this.Node_vertices[StopIndex - 1];
 
         try
         {
@@ -142,8 +121,9 @@ public class SortLine : MonoBehaviour
                 rotation = 0f;
             }
             Node_Connections[StartIndex].Add(new Edge(dir, StopIndex));
+            StopNode.from_ = StartIndex;
             StopNode.Input_dir = dir;
-            Node_vertices[StopIndex - 1] = StopNode;
+            this.Node_vertices[StopIndex - 1] = StopNode;
         }
         catch (Exception e) { return; }
         Vector3 Location = new Vector3();
@@ -161,7 +141,6 @@ public class SortLine : MonoBehaviour
                 case -1: current_x = StartNode.x; current_y = StartNode.y - i; break;
             }
 
-            //Debug.Log($"X: {current_x}, Y:{current_y}");
 
             if (i != 0)
             {
@@ -172,7 +151,7 @@ public class SortLine : MonoBehaviour
             }
         }
         Location = new Vector3(StartNode.x * normilize_field_size, 1, StartNode.y * normilize_field_size);
-        //Debug.Log($"Iloœæ krawêdzi dla punktu {StartIndex}: {Node_Connections[StartIndex].Count}");
+
 
         switch (Node_Connections[StartIndex].Count)
         {
@@ -216,7 +195,6 @@ public class SortLine : MonoBehaviour
 
                     CorrectCross = (LeftSide) ? CrossLeft_Mesh : CrossRight_Mesh;
                     rotationX = (LeftSide) ? 90f : 270f;
-                    //Debug.Log($"Skrêt {LeftSide} ");
                 }
                 if (Edge1Dir == -Edge2Dir)
                 {
@@ -229,10 +207,18 @@ public class SortLine : MonoBehaviour
                     case 1: rotation = 180f; break;
                     case 2: rotation = 270f; break;
                 }
-                Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
-                LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation, 0)));
-                LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
-                LinePart.transform.SetParent(Egde_.transform);
+
+                if (CorrectCross == null)
+                {
+                }
+                else {
+                    Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
+                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation, 0)));
+                    LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
+                    LinePart.transform.SetParent(Egde_.transform);
+                }
+
+
 
 
 
@@ -256,32 +242,34 @@ public class SortLine : MonoBehaviour
         }
     }
 
+    public float Node_Distance(Node start, Node stop)
+    {
+        return (float)Math.Sqrt(Math.Pow((stop.x - start.x), 2) + Math.Pow((stop.y - start.y), 2));
+    }
     public int NearestVertexIndex(Node new_Vertex)
     {
+        if (this.Node_vertices.Count == 1) { return 0;}
         int index = 0;
         float distance = float.MaxValue;
         Node currently_closest_Node = this.Node_vertices[index];
         for (int i = 0; i < this.Node_vertices.Count; i++) 
         {
-            float new_distance = this.Node_vertices[index] & this.Node_vertices[i];
-            if (new_distance  < distance) 
+            float new_distance = Node_Distance(new_Vertex, this.Node_vertices[i]);
+            if (new_distance  < distance && !this.Node_vertices[i].final) 
             {
-                currently_closest_Node = this.Node_vertices[index]; 
+                index = i; 
                 distance = new_distance;
             }
         }
         return index;
     }
-
+        
 
     public void Delete_old_segment(string objectNameToDelete)
     {
 
         GameObject ParentLine = GameObject.Find("Sort_Line");
-
         Transform childTransform = ParentLine.transform.Find(objectNameToDelete);
-
-        Debug.Log($"{childTransform}");
 
         if (childTransform != null)
         {
@@ -291,132 +279,276 @@ public class SortLine : MonoBehaviour
     }
 
 
-    public void NewVertex(int x1, int y1, int x2, int y2, int rotation)
+    public void NewVertex(int Warehouse_x, int Warehouse_y, int rotation,int Max_Warehouse_x, int Min_Warehouse_x, int Max_Warehouse_y, int Min_Warehouse_y)
     {
-        int new_x = x1, new_y = y1;
-        List<(int, int)> points = new List<(int, int)>();
-        // case gdy krótsza œciana jest na osi x
-        // czyli trzeba znaleŸæ boki krótszej œciany z sprawdziæ czy zmeiniaj¹ siê dla x czy dla y. jak dla X, to to jest
-        // ten case
-        if (x1 == x2)
-        {
-            new_x = x1;
-            new_y = y1;
-        }
-        else
-        {
-            //wejœcie od góry
-            if (rotation == 0)
-            {
-                if (y1 < 0)
-                {
-                    y1 += 1;
-                }
-                else
-                {
-                    y1 -= 1;
-                }
-                new_x = x2;
-                new_y = y1;
+        int new_nodes_number = 0;
+        int x_1 = 0, y_1 = 0, x_2 = 0, y_2 = 0, x_3 = 0, y_3 = 0, newNode_index = 0, Node1_index = 0, Node2_index = 0, Node3_index = 0;
 
-            }
-            //wejœcie od do³u
-            else if (rotation == 2)
-            {
-                if (y1 < 0)
-                {
-                    y1 -= 1;
-                }
-                else
-                {
-                    y1 += 1;
-                }
-                new_x = x2;
-                new_y = y1;
+        Node new_Node = new Node(Warehouse_x, Warehouse_y, 0);
+        new_Node.final = true;
+        int Old_node_index = NearestVertexIndex(new_Node);
+        Node Closest_node = this.Node_vertices[Old_node_index];
+        switch (rotation)
+        {
+            case 2:
 
-            }
+                if (Closest_node.x < Min_Warehouse_x &&
+                    Closest_node.y >= Min_Warehouse_y && Closest_node.y <= Max_Warehouse_y)
+                {
+                    new_nodes_number = 3;
+                    x_1 = Warehouse_x + 1;
+                    y_1 = Warehouse_y;
+                    x_2 = x_1;
+                    if (Math.Abs(Max_Warehouse_y) < Math.Abs(Min_Warehouse_y))
+                    {
+                        y_2 = Min_Warehouse_y - 1;
+                    }
+                    else
+                    {
+                        y_2 = Max_Warehouse_y + 1;
+                    }
+                    x_3 = Closest_node.x;
+                    y_3 = y_2;
+                }
+                if ((Closest_node.y < Min_Warehouse_y || Closest_node.y > Max_Warehouse_y) && Closest_node.x <= Warehouse_x)
+                {
+                    new_nodes_number = 2;
+                    x_1 = Warehouse_x + 1;
+                    y_1 = Warehouse_y;
+                    x_2 = x_1;
+                    y_2 = Closest_node.y;
+                }
+                if (Closest_node.x > Warehouse_x)
+                {
+                    new_nodes_number = 1;
+                    x_1 = Closest_node.x;
+                    y_1 = Warehouse_y;
+                }
+                if(Closest_node.y == Warehouse_y && Warehouse_x < Closest_node.x)
+                {
+                    new_nodes_number = 0;
+                }
+
+                break;
+            case -2:
+                if (Closest_node.x > Max_Warehouse_x &&
+                    Closest_node.y >= Min_Warehouse_y && Closest_node.y <= Max_Warehouse_y)
+                {
+                    new_nodes_number = 3;
+                    x_1 = Warehouse_x - 1;
+                    y_1 = Warehouse_y;
+                    x_2 = x_1;
+                    if (Math.Abs(Max_Warehouse_y) < Math.Abs(Min_Warehouse_y))
+                    {
+                        y_2 = Min_Warehouse_y - 1;
+                    }
+                    else
+                    {
+                        y_2 = Max_Warehouse_y + 1;
+                    }
+                    x_3 = Closest_node.x;
+                    y_3 = y_2;
+
+                }
+                if ((Closest_node.y < Min_Warehouse_y || Closest_node.y > Max_Warehouse_y) && Closest_node.x >= Warehouse_x)
+                {
+                    new_nodes_number = 2;
+                    x_1 = Warehouse_x - 1;
+                    y_1 = Warehouse_y;
+                    x_2 = x_1;
+                    y_2 = Closest_node.y;
+
+
+                }
+                if (Closest_node.x < Warehouse_x)
+                {
+                    new_nodes_number = 1;
+                    x_1 = Closest_node.x;
+                    y_1 = Warehouse_y;
+
+                }
+                if (Closest_node.y == Warehouse_y && Warehouse_x > Closest_node.x)
+                {
+                    new_nodes_number = 0;
+                }
+                break;
+            case -1:
+                if (Closest_node.y > Max_Warehouse_y &&
+                    Closest_node.x >= Min_Warehouse_x && Closest_node.x <= Max_Warehouse_x)
+                {
+                    new_nodes_number = 3;
+
+                    x_1 = Warehouse_x;
+                    y_1 = Warehouse_y - 1;
+                    y_2 = y_1;
+                    if (Math.Abs(Max_Warehouse_x) < Math.Abs(Min_Warehouse_x))
+                    {
+                        x_2 = Max_Warehouse_x + 1;
+                    }
+                    else
+                    {
+                        x_2 = Min_Warehouse_x - 1;
+                    }
+                    y_3 = Closest_node.y;
+                    x_3 = x_2;
+
+                }
+                if ((Closest_node.x < Min_Warehouse_x || Closest_node.x > Max_Warehouse_x) && Closest_node.y >= Warehouse_y)
+                {
+                    new_nodes_number = 2;
+                    y_1 = Warehouse_y - 1;
+                    x_1 = Warehouse_x;
+                    y_2 = y_1;
+                    x_2 = Closest_node.x;
+
+                }
+                if (Closest_node.y < Warehouse_y)
+                {
+                    new_nodes_number = 1;
+                    y_1 = Closest_node.y;
+                    x_1 = Warehouse_x;
+                }
+                if (Closest_node.x == Warehouse_x && Warehouse_y > Closest_node.y)
+                {
+                    new_nodes_number = 0;
+                }
+                break;
+            case 1:
+                if (Closest_node.y < Min_Warehouse_y &&
+                    Closest_node.x >= Min_Warehouse_x && Closest_node.x <= Max_Warehouse_x)
+                {
+                    new_nodes_number = 3;
+
+                    x_1 = Warehouse_x;
+                    y_1 = Warehouse_y + 1;
+                    if (Math.Abs(Max_Warehouse_x) < Math.Abs(Min_Warehouse_x))
+                    {
+                        x_2 = Max_Warehouse_x + 1;
+                    }
+                    else
+                    {
+                        x_2 = Min_Warehouse_x - 1;
+                    }
+                    y_2 = y_1;
+                    y_3 = Closest_node.y;
+                    x_3 = x_2;
+                }
+                if ((Closest_node.x < Min_Warehouse_x || Closest_node.x > Max_Warehouse_x) && Closest_node.y <= Warehouse_y)
+                {
+                    new_nodes_number = 2;
+                    y_1 = Warehouse_y + 1;
+                    x_1 = Warehouse_x;
+                    y_2 = y_1;
+                    x_2 = Closest_node.x;
+
+                }
+                if (Closest_node.y > Warehouse_y)
+                {
+                    new_nodes_number = 1;
+                    y_1 = Closest_node.y;
+                    x_1 = Warehouse_x;
+                }
+                if (Closest_node.x == Warehouse_x && Warehouse_y < Closest_node.y)
+                {
+                    new_nodes_number = 0;
+                }
+                break;
         }
-        //case gdy sciana jest na osi y
-        if (y1 == y2)
+        switch (new_nodes_number)
         {
-            new_x = x1;
-            new_y = y1;
+            case 3:
+                newNode_index = Add_new_point(new_Node);
+                Node1_index = Add_new_point(new Node(x_1, y_1, 0));
+                Node2_index = Add_new_point(new Node(x_2, y_2, 0));
+                Node3_index = Add_new_point(new Node(x_3, y_3, 0));
+                Add_new_edge(Old_node_index + 1, Node3_index);
+                Add_new_edge(Node3_index, Node2_index);
+                Add_new_edge(Node2_index, Node1_index);
+                Add_new_edge(Node1_index, newNode_index);
+                break;
+            case 2:
+                newNode_index = Add_new_point(new_Node);
+                Node1_index = Add_new_point(new Node(x_1, y_1, 0));
+                Node2_index = Add_new_point(new Node(x_2, y_2, 0));
+                Add_new_edge(Old_node_index + 1, Node2_index);
+                Add_new_edge(Node2_index, Node1_index);
+                Add_new_edge(Node1_index, newNode_index);
+                break;
+            case 1:
+                newNode_index = Add_new_point(new_Node);
+                Node1_index = Add_new_point(new Node(x_1, y_1, 0));
+                Add_new_edge(Old_node_index + 1, Node1_index);
+                Add_new_edge(Node1_index, newNode_index);
+                break;
+            case 0:
+                newNode_index = Add_new_point(new_Node);
+                Add_new_edge(Old_node_index + 1, newNode_index);
+                break;
         }
-        else
+        string json = "";
+        json += "\"Node_Connections\":{";
+        int index = 0;
+        foreach (var kvp in Node_Connections)
         {
-            //wejœcie od prawej
-            if (rotation == 1)
+            json += "\"" + kvp.Key.ToString() + "\":[";
+            for (int i = 0; i < kvp.Value.Count; i++)
             {
-                if (x1 < 0)
-                {
-                    x1 -= 1;
-                }
-                else
-                {
-                    x1 += 1;
-                }
-                new_x = x1;
-                new_y = y2;
+                json += $"{kvp.Value[i].target}";
+                if (i < kvp.Value.Count - 1)
+                    json += ",";
             }
-            //wejœcie od lewej
-            else if (rotation == 3)
-            {
-                if (x1 < 0)
-                {
-                    x1 += 1;
-                }
-                else
-                {
-                    x1 -= 1;
-                }
-                new_x = x2;
-                new_y = y1;
-            }
+            json += "]";
+            if (index < Node_Connections.Count - 1)
+                json += ",";
+            index++;
         }
-        points.Add((x1, y1));
-        points.Add((new_x, new_y));
+        json += "}}\n\n";
+
+        for (int i = 0; i < this.Node_vertices.Count; i++) 
+        {
+            json += $"{i}: x: {Node_vertices[i].x}, y: {Node_vertices[i].y}\n";
+        }
+
+
+
+
+        Debug.Log($"{json}");
+    }
+
+    public void ReplaceEgde(Edge Old_connection, int StartNodeIndex, int StopNodeIndex, Node NewMidPoint) 
+    {
+        NewMidPoint.from_ = StartNodeIndex;
+        int NewMidPoint_Index  = Add_new_point(NewMidPoint);
+        Old_connection.target = NewMidPoint_Index;
+        Node StopNode = this.Node_vertices[StopNodeIndex-1];
+        StopNode.from_ = NewMidPoint_Index;
+        NewMidPoint.Input_dir = StopNode.Input_dir;
+        this.Node_vertices[StopNodeIndex-1] = StopNode;
+        Add_new_edge(NewMidPoint_Index, StopNodeIndex);
 
     }
 
 
-
-
-
-
-
     public string Serialize()
     {
-        string json = "{\"Node_vertices\":[";
-        //for (int i = 0; i < Node_vertices.Count; i++)
-        //{
-        //    json += "[";
-        //    for (int j = 0; j < Node_vertices[i].Count; j++)
-        //    {
-        //        json += Node_vertices[i][j].ToString();
-        //        if (j < Node_vertices[i].Count - 1)
-        //            json += ",";
-        //    }
-        //    json += "]";
-        //    if (i < Node_vertices.Count - 1)
-        //        json += ",";
-        //}
-        //json += "],\"Node_Connections\":{";
-        //int index = 0;
-        //foreach (var kvp in Node_Connections)
-        //{
-        //    json += "\"" + kvp.Key.ToString() + "\":[";
-        //    for (int i = 0; i < kvp.Value.Count; i++)
-        //    {
-        //        json += kvp.Value[i].ToString();
-        //        if (i < kvp.Value.Count - 1)
-        //            json += ",";
-        //    }
-        //    json += "]";
-        //    if (index < Node_Connections.Count - 1)
-        //        json += ",";
-        //    index++;
-        //}
-        //json += "}}";
+        string json ="";
+        json += "\"Node_Connections\":{";
+        int index = 0;
+        foreach (var kvp in Node_Connections)
+        {
+            json += "\"" + kvp.Key.ToString() + "\":[";
+            for (int i = 0; i < kvp.Value.Count; i++)
+            {
+                json += $"{kvp.Value[i].target}";
+                if (i < kvp.Value.Count - 1)
+                    json += ",";
+            }
+            json += "]";
+            if (index < Node_Connections.Count - 1)
+                json += ",";
+            index++;
+        }
+        json += "}}";
 
         return json;
     }
