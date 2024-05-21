@@ -2,6 +2,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
+using UnityEditor.Experimental.GraphView;
+using System.Threading;
 
 
 [System.Serializable]
@@ -27,7 +29,39 @@ public class ID_List_To_Delete
 
 }
 
+public class WarehouseFiled
+{
+    public int MaxX;
+    public int MaxY;
+    public int MinY;
+    public int MinX;
+    public WarehouseFiled(int minx, int miny, int maxx, int maxy) { this.MaxX = maxx; this.MaxY = maxy; this.MinX = minx; this.MinY = miny; }
 
+    public bool Check_point(Node point)
+    {
+        if (point.x < MaxX && point.x > MinX && point.y < MaxY && point.y > MinY && !point.final) { return true; }
+        else { return false; }
+    }
+    public bool Check_point(int x, int y)
+    {
+        if (x <= MaxX && x >= MinX && y <= MaxY && y >= MinY ) { return true; }
+        else { return false; }
+    }
+    public bool Check_edge(Node point1, Node point2)
+    {
+        if ((point1.y == point2.y && point1.y < MaxY && point1.y > MinY) && ((point1.x > MaxX && point2.x < MinX)||(point2.x > MaxX && point1.x < MinX)) ) 
+        {
+            return true;
+        }
+        if ((point1.x == point2.x && point1.x < MaxX && point1.x > MinX) && ((point1.y > MaxY && point2.y < MinY) || (point2.y > MaxY && point1.y < MinY)))
+        {
+            return true;
+        }
+
+
+        else { return false; }
+    } 
+};
 
 
 
@@ -49,19 +83,20 @@ public class Simulation: MonoBehaviour
     public float ML_L;
     [JsonIgnore]
     public float ML_H;
+    private List<WarehouseFiled> warehouseFileds;
 
 
     private void Start() 
     {
 
         this.Warehouses = new Dictionary<int, warehouse>();
+        this.warehouseFileds = new List<WarehouseFiled>();
 
         // start
         this.Add_warehouse(new warehouse("ODW", (-20), (0), -2, 50, 50, 50));
-        //this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
-        //this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("ODW", (0), (20), 1, 50, 50, 50));
-
+        this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("ODW", (0), (30), 1, 50, 50, 50));
         //wokó³ górnego
         this.Add_warehouse(new warehouse("GR", (-15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
@@ -74,14 +109,20 @@ public class Simulation: MonoBehaviour
         this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-20), (-15), 2, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-35), (-15), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LEFT", (-20), (15), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
 
         //wokó³ dolnego
-        //this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
-        //this.Add_warehouse(new warehouse("DOL", (15) , (-50), -1, 50, 50, 50));
-        //this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
-        //this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("DOL", (15), (-50), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
 
-        //
+        //wokó³ prawego
+        this.Add_warehouse(new warehouse("RIGHT", (20), (-15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("RIGHT", (35), (-15), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("RIGHT", (20), (15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("RIGHT", (35), (15), 1, 50, 50, 50));
         this.Line_start_x = 0;
         this.Line_start_y = 0;
         this.sort_method = "Destination";
@@ -103,14 +144,17 @@ public class Simulation: MonoBehaviour
     {
         this.sort_method = meth;
     }
-
     public void Add_warehouse(warehouse New_Whouse) 
     {
-        New_Whouse.Add_MeshObject(ML_Mesh,ML_W,ML_L,ML_H, last_id);
-        this.Warehouses[last_id] = New_Whouse;
-        last_id++;
+        int destroy = New_Whouse.Add_MeshObject(ML_Mesh,ML_W,ML_L,ML_H, last_id, warehouseFileds);
+        if (destroy == 0)
+        {
+            this.Warehouses[last_id] = New_Whouse;
+            last_id++;
+            return;
+        }
+        Debug.Log("Magazyn na magazynie lub Magazyn na œcie¿ce");
     }
-
     public void Delete_Warehouse(int keyToRemove)
     {
         if (Warehouses.ContainsKey(keyToRemove))
@@ -124,7 +168,6 @@ public class Simulation: MonoBehaviour
             Warehouses.Remove(keyToRemove);
         }
     }
-
     public string ToJson()
     {
         string sb = "{ \"Warehouses\": [";
