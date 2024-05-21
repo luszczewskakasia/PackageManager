@@ -4,6 +4,8 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System;
 using Parabox.CSG;
+//using UnityEditor.Experimental.GraphView;
+//using UnityEngine.InputSystem;
 
 [System.Serializable]
 
@@ -23,13 +25,23 @@ public class warehouse : MonoBehaviour
     public GameObject instantiatedObject;
 
     //dane z linii produkcyjnej
-    public float LocationX;
-    public float LocationY;
-    public float rotation;
+    public int Grid_X;
+    public int Grid_Y;
+    public int Grid_rotation;
+
+    private float LocationX;
+    private float LocationY;
+    private float rotation;
+
+    public int maxX;
+    public int maxY;
+    public int minX;
+    public int minY;
+
     public int shelves_number;
 
 
-    public warehouse(string Destination, int X, int Y, float rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
+    public warehouse(string Destination, int X, int Y, int rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
     {
         this.Destination = Destination;
         this.BigPackagesSlots = BigPackagesSlots;
@@ -38,10 +50,20 @@ public class warehouse : MonoBehaviour
         this.Empty_slots = new List<int> { BigPackagesSlots, MediumPackagesSlots, SmallPachagesSlots };
         this.PackegesOverload = new List<bool> { false, false, false };
         this.storageList = new Dictionary<string, int>();
+        this.Grid_X = X;
+        this.Grid_Y = Y;
+        this.Grid_rotation = rotation;
+
         this.LocationX = (float)(X * 13.05);
         this.LocationY = (float)(Y * 13.05);
-        this.rotation = rotation;
-        //this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots)/45);
+        switch (rotation)
+        {
+            case -1: this.rotation = 0f; break;
+            case -2: this.rotation = 90f; break;
+            case 1: this.rotation = 180f; break;
+            case 2: this.rotation = -90; break;
+        }
+        this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots)/45);
         Debug.Log($"{this.shelves_number}");
 
     }
@@ -178,6 +200,52 @@ public class warehouse : MonoBehaviour
         int wall_length = (int)(Mathf.RoundToInt((float)(length_ * MLlength + MLlength + 16f + 2 * 1) / 13.05f) + 1);
         int wall_width = (int)(Mathf.RoundToInt(max_offset_w / 13.05f) + 1);
 
+
+
+
+
+
+        switch (this.Grid_rotation) 
+        { 
+        case -1:
+
+                this.maxY = this.Grid_Y + wall_width;
+                this.maxX = this.Grid_X + (wall_length - 1) / 2;
+                this.minY = this.Grid_Y;
+                this.minX = this.Grid_X - (wall_length - 1) / 2;
+
+                break;
+        case 1:
+                this.maxY = this.Grid_Y ;
+                this.maxX = this.Grid_X + (wall_length) / 2;
+                this.minY = this.Grid_Y - wall_width;
+                this.minX = this.Grid_X - (wall_length) / 2;
+
+                break;
+        case -2:
+
+                this.maxX = this.Grid_X + wall_width;
+                this.maxY = this.Grid_Y + (wall_length) / 2;
+                this.minX = this.Grid_X;
+                this.minY = this.Grid_Y - (wall_length)/2 ;
+
+                break;
+        case 2:
+                this.maxX = this.Grid_X ;
+                this.maxY = this.Grid_Y + (wall_length) / 2;
+                this.minX = this.Grid_X - wall_width;
+                this.minY = this.Grid_Y - (wall_length) / 2;
+                break;
+
+        }
+
+
+        Debug.Log($"{this.Destination}{ID}: Minima: X {this.minX}, Y {this.minY}, Maxima: X {this.maxX}, Y {this.maxY}, Rotation: {this.Grid_rotation}");
+
+
+
+
+
         //dluzsze sciany
         GameObject front_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
@@ -192,13 +260,13 @@ public class warehouse : MonoBehaviour
         float holeHeight = 10.0f;
         hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
         hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
-        hole.transform.SetParent(cube.transform);
+        hole.transform.SetParent(front_wall.transform);
 
         Model result = CSG.Subtract(front_wall, hole);
         var composite = new GameObject();
         composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
         composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        cube.transform.position = composite.transform.position;
+        front_wall.transform.position = composite.transform.position;
         composite.transform.SetParent(instantiatedObject.transform);
 
         Destroy(front_wall);
@@ -210,19 +278,19 @@ public class warehouse : MonoBehaviour
         back_wall.name = $"BackWall";
         back_wall.transform.SetParent(instantiatedObject.transform);
 
-        GameObject gate_hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        float gate_width = 10.0f;
-        float gate_height = 10.0f;
-        gate_hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        gate_hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
-        gate_hole.transform.SetParent(cube.transform);
+        //GameObject gate_hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //float gate_width = 10.0f;
+        //float gate_height = 10.0f;
+        //gate_hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        //gate_hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
+        //gate_hole.transform.SetParent(back_wall.transform);
 
-        Model result = CSG.Subtract(back_wall, gate_hole);
-        var composite = new GameObject();
-        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
-        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        cube.transform.position = composite.transform.position;
-        composite.transform.SetParent(instantiatedObject.transform);
+        //Model result2 = CSG.Subtract(back_wall, gate_hole);
+        //var composite2 = new GameObject();
+        //composite2.AddComponent<MeshFilter>().sharedMesh = result2.mesh;
+        //composite2.AddComponent<MeshRenderer>().sharedMaterials = result2.materials.ToArray();
+        //back_wall.transform.position = composite2.transform.position;
+        //composite2.transform.SetParent(instantiatedObject.transform);
 
         //krotsze
         GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -239,7 +307,10 @@ public class warehouse : MonoBehaviour
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 
-
+        GameObject SortLineObject = GameObject.Find("SortingLine");
+        SortLine Sorting = SortLineObject.GetComponent<SortLine>();
+        Debug.Log("Sorting");
+        Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX,this.maxY,this.minY);
     }
 
     public void UpdateMeshRotation(float posX, float posY)
