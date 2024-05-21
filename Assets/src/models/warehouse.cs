@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.InputSystem;
+using Parabox.CSG;
 
 [System.Serializable]
 
@@ -269,34 +270,65 @@ public class warehouse : MonoBehaviour
         }
 
         borders.Add(new WarehouseFiled(this.minX, this.minY, this.maxX,this.maxY));
-        //Debug.Log($"{this.Destination}{ID}: Minima: X {this.minX}, Y {this.minY}, Maxima: X {this.maxX}, Y {this.maxY}, Rotation: {this.Grid_rotation}");
 
         //dluzsze sciany
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject front_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
-        cube.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        cube.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        cube.name = $"FrontWall";
-        cube.transform.SetParent(instantiatedObject.transform);
+        front_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        front_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
+        front_wall.name = $"FrontWall";
+        front_wall.transform.SetParent(instantiatedObject.transform);
 
+        // Create a hole within the wall
+        GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        float holeWidth = 5.0f;
+        float holeHeight = 10.0f;
+        hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
+        hole.transform.SetParent(front_wall.transform);
 
-        GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube2.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
-        cube2.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        cube2.name = $"BackWall";
-        cube2.transform.SetParent(instantiatedObject.transform);
+        Model result = CSG.Subtract(front_wall, hole);
+        var composite = new GameObject();
+        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
+        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
+        front_wall.transform.position = composite.transform.position;
+        composite.transform.SetParent(instantiatedObject.transform);
+
+        Destroy(front_wall);
+        Destroy(hole);
+
+        GameObject back_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        back_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
+        back_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
+        back_wall.name = $"BackWall";
+        back_wall.transform.SetParent(instantiatedObject.transform);
+
+        //GameObject gate_hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        //float gate_width = 10.0f;
+        //float gate_height = 10.0f;
+        //gate_hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        //gate_hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
+        //gate_hole.transform.SetParent(back_wall.transform);
+
+        //Model result2 = CSG.Subtract(back_wall, gate_hole);
+        //var composite2 = new GameObject();
+        //composite2.AddComponent<MeshFilter>().sharedMesh = result2.mesh;
+        //composite2.AddComponent<MeshRenderer>().sharedMaterials = result2.materials.ToArray();
+        //back_wall.transform.position = composite2.transform.position;
+        //composite2.transform.SetParent(instantiatedObject.transform);
+
         //krotsze
-        GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube3.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
-        cube3.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        cube3.name = $"LeftWall";
-        cube3.transform.SetParent(instantiatedObject.transform);
+        GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        left_wall.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
+        left_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
+        left_wall.name = $"LeftWall";
+        left_wall.transform.SetParent(instantiatedObject.transform);
 
-        GameObject cube4 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube4.transform.position = new Vector3(this.LocationX - wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
-        cube4.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        cube4.name = $"RightWall";
-        cube4.transform.SetParent(instantiatedObject.transform);
+        GameObject right_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        right_wall.transform.position = new Vector3(this.LocationX - wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
+        right_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
+        right_wall.name = $"RightWall";
+        right_wall.transform.SetParent(instantiatedObject.transform);
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 
