@@ -271,31 +271,29 @@ public class warehouse : MonoBehaviour
 
         borders.Add(new WarehouseFiled(this.minX, this.minY, this.maxX,this.maxY));
 
+        float holeWidth = 6.8f;
+        float holeHeight = 5.0f;
+
         //dluzsze sciany
-        GameObject front_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject front_wall1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
-        front_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        front_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        front_wall.name = $"FrontWall";
-        front_wall.transform.SetParent(instantiatedObject.transform);
+        front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall1.transform.localScale = new Vector3((wall_length * 13.05f)/2 - holeWidth/2, 15f, 1f);
+        front_wall1.name = $"FrontWall";
+        front_wall1.transform.SetParent(instantiatedObject.transform);
 
-        // Create a hole within the wall
+        GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+        front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall2.transform.localScale = new Vector3((wall_length * 13.05f)/ 2 - holeWidth / 2, 15f, 1f);
+        front_wall2.name = $"FrontWall";
+        front_wall2.transform.SetParent(instantiatedObject.transform);
+
         GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        float holeWidth = 5.0f;
-        float holeHeight = 10.0f;
-        hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        hole.transform.position = new Vector3(this.LocationX, 13f, this.LocationY + 6.75f);
         hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
-        hole.transform.SetParent(front_wall.transform);
+        hole.transform.SetParent(instantiatedObject.transform);
 
-        Model result = CSG.Subtract(front_wall, hole);
-        var composite = new GameObject();
-        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
-        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        front_wall.transform.position = composite.transform.position;
-        composite.transform.SetParent(instantiatedObject.transform);
-
-        Destroy(front_wall);
-        Destroy(hole);
 
         GameObject back_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         back_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
@@ -321,7 +319,6 @@ public class warehouse : MonoBehaviour
         GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         left_wall.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
         left_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        left_wall.name = $"LeftWall";
         left_wall.transform.SetParent(instantiatedObject.transform);
 
         GameObject right_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);

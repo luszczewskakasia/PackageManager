@@ -84,13 +84,17 @@ public class Simulation: MonoBehaviour
     [JsonIgnore]
     public float ML_H;
     private List<WarehouseFiled> warehouseFileds;
+    public int package_ID;
+    private List<Package> packageList;
 
 
     private void Start() 
     {
+        this.packageList = new List<Package>();
 
         this.Warehouses = new Dictionary<int, warehouse>();
         this.warehouseFileds = new List<WarehouseFiled>();
+        
 
         // start
         this.Add_warehouse(new warehouse("ODW", (-20), (0), -2, 50, 50, 50));
@@ -102,7 +106,6 @@ public class Simulation: MonoBehaviour
         this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (-15), (15), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (20), 2, 50, 50, 50));
-
 
         //wokó³ lewego
         this.Add_warehouse(new warehouse("LEFT", (-20), (15), 1, 50, 50, 50));
@@ -168,6 +171,14 @@ public class Simulation: MonoBehaviour
             Warehouses.Remove(keyToRemove);
         }
     }
+
+    //public void add_package(int size, int WarehouseID)
+    //{
+    //    Pakckage new_package = new Package(size, WarehouseID);
+    //    packageList.Add(newPackage);
+
+    //}
+
     public string ToJson()
     {
         string sb = "{ \"Warehouses\": [";
@@ -188,7 +199,7 @@ public class Simulation: MonoBehaviour
             sb += $"\"MinX\": {warehouse_.minX},";
             sb += $"\"MinY\": {warehouse_.minY},";
             sb += $"\"Grid_rotation\": {warehouse_.Grid_rotation}";
-            sb += "},"; 
+            sb += "},";
         }
 
         if (sb.EndsWith(","))
@@ -199,11 +210,37 @@ public class Simulation: MonoBehaviour
         sb += "]}";
 
         return sb;
+        Debug.Log(sb);
     }
+    //{
+    //    var warehousePackagesDict = new Dictionary<string, Dictionary<string, int>>();
+    //    Debug.Log("XD");
+    //    foreach (var kvp in Warehouses)
+    //    {
+    //        Debug.Log("XDD");
+    //        warehouse warehouse_ = kvp.Value;
 
+    //        var packagesDict = new Dictionary<string, int>
+    //        {
+    //            { "BigPackagesSlots", warehouse_.BigPackagesSlots },
+    //            { "MediumPackagesSlots", warehouse_.MediumPackagesSlots },
+    //            { "SmallPackagesSlots", warehouse_.SmallPackagesSlots }
+    //        };
 
+    //        warehousePackagesDict[warehouse_.Destination] = packagesDict;
+    //    }
+
+    //    string jsonString = JsonConvert.SerializeObject(warehousePackagesDict);
+    //    return jsonString;
+    //}
 
 }
+
+
+
+
+
+
 //public string Destination;
 //public int BigPackagesSlots;
 //public int MediumPackagesSlots;

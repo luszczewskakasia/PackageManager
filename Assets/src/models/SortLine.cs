@@ -187,7 +187,7 @@ public class SortLine : MonoBehaviour
                 bool LeftSide = true;
                 float rotationX = 90f;
                 GameObject CorrectCross = null;
-                Debug.Log($"Skrzy¿owanie Node1:{Edge1Dir}, Node2:{Edge2Dir}, InputDir:{StartNode.Input_dir}  ");
+                //Debug.Log($"Skrzy¿owanie Node1:{Edge1Dir}, Node2:{Edge2Dir}, InputDir:{StartNode.Input_dir}  ");
 
                 if (StartNode.Input_dir == Edge1Dir || StartNode.Input_dir == Edge2Dir)
                 {
@@ -356,7 +356,7 @@ public class SortLine : MonoBehaviour
         if (Closet_Node.x < Node_to_check.x) { dir = 2; }
         if (Closet_Node.y < Node_to_check.y) { dir = 1; }
         if (Closet_Node.y > Node_to_check.y) { dir = -1; }
-        Debug.Log($"Indeks najbli¿szego Noda {Closet_Node.Index}, {Closet_Node.x}, {Closet_Node.y} ,");
+        //Debug.Log($"Indeks najbli¿szego Noda {Closet_Node.Index}, {Closet_Node.x}, {Closet_Node.y} ,");
 
         List<Edge> Edges = Node_Connections[Closet_Node.Index];
         Edge? Old_Connections = null;
@@ -378,7 +378,7 @@ public class SortLine : MonoBehaviour
         if (Old_Edge_index != null)
         {
             Node New_Closet = ReplaceEgde((Edge)Old_Connections, Closet_Node.Index, (int)Old_Target, Node_to_check);
-            Debug.Log($"Indeks najbli¿szego nowego Noda {New_Closet.Index}, {New_Closet.x}, {New_Closet.y} ,");
+            //Debug.Log($"Indeks najbli¿szego nowego Noda {New_Closet.Index}, {New_Closet.x}, {New_Closet.y} ,");
 
             //temp_nodes[Len - 1] = New_Closet;
         }
@@ -445,11 +445,11 @@ public class SortLine : MonoBehaviour
         str = "Wstêpna lista: ";
         for (int i = 0; i < temp_nodes.Count; i++) { str += $"[{temp_nodes[i].x}, {temp_nodes[i].y}] ,"; }
         str += "]\n";
-        Debug.Log(str);
+        //Debug.Log(str);
         str = "Poprawiona Lista: ";
         for (int i = 0; i < Corrected_line.Count; i++) { str += $"[{Corrected_line[i].x} , {Corrected_line[i].y}] ,"; }
         str += "]\n";
-        Debug.Log(str);
+        //Debug.Log(str);
         return Corrected_line;
 
         return temp_nodes;
@@ -704,7 +704,7 @@ public class SortLine : MonoBehaviour
         {
             json += $"{Node_vertices[i].Index}: x: {Node_vertices[i].x}, y: {Node_vertices[i].y},Input_dir: {Node_vertices[i].Input_dir},from_: {Node_vertices[i].from_}\n";
         }
-        Debug.Log($"{json}");
+        //Debug.Log($"{json}");
     }
     public Node ReplaceEgde(Edge Old_connection, int StartNodeIndex, int StopNodeIndex, Node NewMidPoint) 
     {
