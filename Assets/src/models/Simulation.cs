@@ -69,6 +69,7 @@ public class Simulation: MonoBehaviour
 {
     [JsonProperty]
     public Dictionary<int,warehouse> Warehouses { get; set; }
+
     public string sort_method;
     public int Line_start_x;
     public int Line_start_y;
@@ -172,6 +173,11 @@ public class Simulation: MonoBehaviour
         }
     }
 
+    public void tracing_packages ()
+    {
+        //this.Warehouses = new 
+
+    }
     //public void add_package(int size, int WarehouseID)
     //{
     //    Pakckage new_package = new Package(size, WarehouseID);

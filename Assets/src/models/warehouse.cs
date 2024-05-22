@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 using System;
 using UnityEditor.Experimental.GraphView;
 using UnityEngine.InputSystem;
-using Parabox.CSG;
 
 [System.Serializable]
 
@@ -279,14 +278,12 @@ public class warehouse : MonoBehaviour
         // x, y, z, gdzie y to wysokosc
         front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
         front_wall1.transform.localScale = new Vector3((wall_length * 13.05f)/2 - holeWidth/2, 15f, 1f);
-        front_wall1.name = $"FrontWall";
         front_wall1.transform.SetParent(instantiatedObject.transform);
 
         GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
         front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
         front_wall2.transform.localScale = new Vector3((wall_length * 13.05f)/ 2 - holeWidth / 2, 15f, 1f);
-        front_wall2.name = $"FrontWall";
         front_wall2.transform.SetParent(instantiatedObject.transform);
 
         GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -298,22 +295,7 @@ public class warehouse : MonoBehaviour
         GameObject back_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         back_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
         back_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        back_wall.name = $"BackWall";
         back_wall.transform.SetParent(instantiatedObject.transform);
-
-        //GameObject gate_hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        //float gate_width = 10.0f;
-        //float gate_height = 10.0f;
-        //gate_hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        //gate_hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
-        //gate_hole.transform.SetParent(back_wall.transform);
-
-        //Model result2 = CSG.Subtract(back_wall, gate_hole);
-        //var composite2 = new GameObject();
-        //composite2.AddComponent<MeshFilter>().sharedMesh = result2.mesh;
-        //composite2.AddComponent<MeshRenderer>().sharedMaterials = result2.materials.ToArray();
-        //back_wall.transform.position = composite2.transform.position;
-        //composite2.transform.SetParent(instantiatedObject.transform);
 
         //krotsze
         GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
