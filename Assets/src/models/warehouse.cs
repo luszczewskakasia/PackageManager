@@ -32,6 +32,8 @@ public class warehouse : MonoBehaviour
     private float LocationY;
     private float rotation;
 
+    public List<Node> path;
+
     public int maxX;
     public int maxY;
     public int minX;
@@ -83,12 +85,12 @@ public class warehouse : MonoBehaviour
     //dodaj paczkê nadaj ID
     private void New_packege(int size, Package new_packge)
     {
-        if (!PackegesOverload[size])
-        {
-            Empty_slots[size]--;
-            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
-            new_packge.setID("KRK", 12);
-        }
+        //if (!PackegesOverload[size])
+        //{
+        //    Empty_slots[size]--;
+        //    if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+        //    new_packge.setID("KRK", 12);
+        //}
     }
 
     public warehouse get()
@@ -305,10 +307,20 @@ public class warehouse : MonoBehaviour
         //Debug.Log("Sorting");
 
         Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX,this.maxY,this.minY, borders);
-
+        this.path = Sorting.FindPath(0,this.Grid_X,this.Grid_Y);
+        //string str = $"{this.Destination}{ID} : [ ";
+        //for (int i = 0; i < Path.Count; i++) 
+        //{ 
+        //    str += $" {Path[i]} ";
+        //}
+        //str += " ]";
+        //Debug.Log(str);
         return 0;
 
     }
+
+
+
 
     public void UpdateMeshRotation(float posX, float posY)
     {
