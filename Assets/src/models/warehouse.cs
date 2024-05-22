@@ -32,6 +32,8 @@ public class warehouse : MonoBehaviour
     private float LocationY;
     private float rotation;
 
+    public List<Node> path;
+
     public int maxX;
     public int maxY;
     public int minX;
@@ -83,12 +85,12 @@ public class warehouse : MonoBehaviour
     //dodaj paczkê nadaj ID
     private void New_packege(int size, Package new_packge)
     {
-        if (!PackegesOverload[size])
-        {
-            Empty_slots[size]--;
-            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
-            new_packge.setID("KRK", 12);
-        }
+        //if (!PackegesOverload[size])
+        //{
+        //    Empty_slots[size]--;
+        //    if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+        //    new_packge.setID("KRK", 12);
+        //}
     }
 
     public warehouse get()
@@ -277,23 +279,13 @@ public class warehouse : MonoBehaviour
         GameObject front_wall1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
         front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
-<<<<<<< HEAD
         front_wall1.transform.localScale = new Vector3((wall_length * 13.05f)/2 - holeWidth/2, 15f, 1f);
-=======
-        front_wall1.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
-        front_wall1.name = $"FrontWall";
->>>>>>> 2647a391560b6c5c6fd1915b33da74abc045d09f
         front_wall1.transform.SetParent(instantiatedObject.transform);
 
         GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
         front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
-<<<<<<< HEAD
         front_wall2.transform.localScale = new Vector3((wall_length * 13.05f)/ 2 - holeWidth / 2, 15f, 1f);
-=======
-        front_wall2.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
-        front_wall2.name = $"FrontWall";
->>>>>>> 2647a391560b6c5c6fd1915b33da74abc045d09f
         front_wall2.transform.SetParent(instantiatedObject.transform);
 
         GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -325,11 +317,14 @@ public class warehouse : MonoBehaviour
         SortLine Sorting = SortLineObject.GetComponent<SortLine>();
         //Debug.Log("Sorting");
 
-        Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX, this.maxY, this.minY, borders);
-
+        Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX,this.maxY,this.minY, borders);
+        this.path = Sorting.FindPath(0,this.Grid_X,this.Grid_Y);
         return 0;
 
     }
+
+
+
 
     public void UpdateMeshRotation(float posX, float posY)
     {
