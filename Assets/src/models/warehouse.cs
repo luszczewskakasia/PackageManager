@@ -15,10 +15,11 @@ public class warehouse : MonoBehaviour
     public int BigPackagesSlots;
     public int MediumPackagesSlots;
     public int SmallPackagesSlots;
+    public Dictionary<string,Shelf> Shelf_List;
 
     //dane operacyjne
     private List<int> Empty_slots;
-    private List<bool> PackegesOverload;
+    public List<bool> PackegesOverload;
     private Dictionary<string, int> storageList;
     [JsonIgnore]
     public GameObject instantiatedObject;
@@ -54,6 +55,7 @@ public class warehouse : MonoBehaviour
         this.Grid_X = X;
         this.Grid_Y = Y;
         this.Grid_rotation = rotation;
+        this.Shelf_List = new Dictionary<string, Shelf>();
 
         this.LocationX = (float)(X * 13.05);
         this.LocationY = (float)(Y * 13.05);
@@ -83,7 +85,7 @@ public class warehouse : MonoBehaviour
     }
 
     //dodaj paczkê nadaj ID
-    private void New_packege(int size, Package new_packge)
+    public void New_packege(int size, Package new_packge)
     {
         //if (!PackegesOverload[size])
         //{
@@ -254,10 +256,16 @@ public class warehouse : MonoBehaviour
 
                 for (int hight_number = 0; hight_number < 5; hight_number++)
                 {
+                    int shelf_index = (l_index* width_*5)+(w_index*5)+ hight_number;
 
-                    GameObject InstanceWarehouse = Instantiate(InstanceML, new Vector3(this.LocationX + offset_l, 1f + hight_number * MLheigth, this.LocationY + offset_w), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
-                    InstanceWarehouse.name = $"Shelf{4 * (w_index - 1) + l_index + (4 + 4) * hight_number}";
-                    InstanceWarehouse.transform.SetParent(instantiatedObject.transform);
+                    GameObject InstanceShelf = Instantiate(InstanceML, new Vector3(this.LocationX + offset_l, 1f + hight_number * MLheigth, this.LocationY + offset_w), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
+                    InstanceShelf.name = $"Shelf{shelf_index}";
+                    InstanceShelf.transform.SetParent(instantiatedObject.transform);
+
+
+                    this.Shelf_List.Add($"Shelf{shelf_index}", 
+                        new Shelf(InstanceShelf, $"Shelf{shelf_index}"));
+
                     if (offset_w > max_offset_w) { max_offset_w = offset_w; }
 
                 }
@@ -273,32 +281,44 @@ public class warehouse : MonoBehaviour
         borders.Add(new WarehouseFiled(this.minX, this.minY, this.maxX,this.maxY));
         //Debug.Log($"{this.Destination}{ID}: Minima: X {this.minX}, Y {this.minY}, Maxima: X {this.maxX}, Y {this.maxY}, Rotation: {this.Grid_rotation}");
 
+        float holeWidth = 6.8f;
+        float holeHeight = 5.0f;
+
         //dluzsze sciany
-        GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject front_wall1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
-        cube.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        cube.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        cube.name = $"FrontWall";
-        cube.transform.SetParent(instantiatedObject.transform);
+        front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall1.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
+        front_wall1.transform.SetParent(instantiatedObject.transform);
+
+        GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+        front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall2.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
+        front_wall2.transform.SetParent(instantiatedObject.transform);
+
+        GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        hole.transform.position = new Vector3(this.LocationX, 13f, this.LocationY + 6.75f);
+        hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
+        hole.transform.SetParent(instantiatedObject.transform);
 
 
-        GameObject cube2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube2.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
-        cube2.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        cube2.name = $"BackWall";
-        cube2.transform.SetParent(instantiatedObject.transform);
+        GameObject back_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        back_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
+        back_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
+        back_wall.transform.SetParent(instantiatedObject.transform);
+
         //krotsze
-        GameObject cube3 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube3.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
-        cube3.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        cube3.name = $"LeftWall";
-        cube3.transform.SetParent(instantiatedObject.transform);
+        GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        left_wall.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
+        left_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
+        left_wall.transform.SetParent(instantiatedObject.transform);
 
-        GameObject cube4 = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        cube4.transform.position = new Vector3(this.LocationX - wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
-        cube4.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        cube4.name = $"RightWall";
-        cube4.transform.SetParent(instantiatedObject.transform);
+        GameObject right_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        right_wall.transform.position = new Vector3(this.LocationX - wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
+        right_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
+        right_wall.name = $"RightWall";
+        right_wall.transform.SetParent(instantiatedObject.transform);
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 

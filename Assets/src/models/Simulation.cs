@@ -4,6 +4,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using UnityEditor.Experimental.GraphView;
 using System.Threading;
+using System.Drawing;
 
 
 [System.Serializable]
@@ -18,7 +19,6 @@ public class KeyValuePair
         this.val = w_; 
     }
 }
-
 
 [System.Serializable]
 public class ID_List_To_Delete 
@@ -73,6 +73,13 @@ public class Simulation: MonoBehaviour
     public int Line_start_x;
     public int Line_start_y;
     private int last_id = 0;
+    private int last_pack_id = 0;
+    [JsonIgnore]
+    public GameObject Small_Package_Mesh_object;
+    [JsonIgnore]
+    public GameObject Medium_Package_Mesh_object;
+    [JsonIgnore]
+    public GameObject Big_Package_Mesh_object;
     [JsonIgnore]
     public GameObject Small_Mesh;
     [JsonIgnore]
@@ -200,7 +207,62 @@ public class Simulation: MonoBehaviour
 
         return sb;
     }
+     public void Add_package_instance(List<int> size_list,List<string> destination_list) 
+    {
+        int New_Packeges_Count=0;
 
+        if (size_list.Count > destination_list.Count){ New_Packeges_Count = destination_list.Count; }
+        else { New_Packeges_Count = size_list.Count; }
+        for(int i= 0; i < New_Packeges_Count; i++) 
+        {
+            int? Final_warehouse_id = null;
+            string Pack_id = "";
+            foreach (int j in this.Warehouses.Keys) 
+            {
+                if (! Warehouses[j].PackegesOverload[size_list[i]])
+                { 
+                   Final_warehouse_id = j; 
+                   Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
+                   last_pack_id ++;
+                   break;
+                } 
+            }
+            if (Final_warehouse_id != null) 
+            {
+                GameObject New_Package_mesh;
+                Package New_Package;
+                switch (size_list[i]) 
+                {
+                    case 0:
+                        New_Package_mesh = Instantiate(Small_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh) ;
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                    case 1:
+                        New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                    case 2:
+                        New_Package_mesh = Instantiate(Big_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                }
+
+            }
+        }
+
+
+
+
+    }
 
 
 }
