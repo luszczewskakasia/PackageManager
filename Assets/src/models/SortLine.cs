@@ -6,6 +6,8 @@ using System;
 using System.Reflection;
 using UnityEditor.Experimental.GraphView;
 using System.ComponentModel;
+using TreeEditor;
+using Unity.VisualScripting;
 
 [System.Serializable]
 
@@ -78,7 +80,6 @@ public class SortLine : MonoBehaviour
         Add_new_edge(ScP, StN);
 
     }
-
     public void Start()
     {
     }
@@ -811,4 +812,35 @@ public class SortLine : MonoBehaviour
         }
         Node_Connections[StartIndex].Add(new Edge(dir, StopIndex));
     }
+    public bool DFS(int start_index, int endIndex, List<Node> path)
+    {
+        path.Add(this.Node_vertices[start_index]);
+        if (start_index  == endIndex)
+            return true;
+        foreach (Edge child in Node_Connections[start_index+1])
+        {
+            int childIndex = child.target - 1;
+            if (DFS(childIndex, endIndex, path))
+                return true;
+        }
+        path.RemoveAt(path.Count - 1);
+        return false;
+    }
+    public List<Node> FindPath(int startValue, int Node_x, int Node_y)
+    {
+        int endValue = (int)(IsNodeExist(new Node(Node_x, Node_y, 0))-1);
+        List<Node> path = new List<Node>();
+        if (DFS(startValue, endValue, path))
+            return path;
+        return new List<Node>();
+    }
+
+
 }
+
+
+
+
+
+
+

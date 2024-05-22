@@ -10,13 +10,12 @@ public class MenagePackeges : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Package_List = new List<Package> ();
+        Package_List = new List<Package>();
 
-        for (int i = 0; i < 5; i++) 
+        for (int i = 0; i < 5; i++)
         {
             System.Random random = new System.Random();
             int randomNumber = random.Next(0, 3);
-            Package_List.Add(new Package(randomNumber, "Krk"));
         }
 
     }
