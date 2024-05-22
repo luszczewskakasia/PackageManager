@@ -11,13 +11,11 @@ public class MenagePackeges : MonoBehaviour
     void Start()
     {
         Package_List = new List<Package>();
+    }
 
-        for (int i = 0; i < 5; i++)
-        {
-            System.Random random = new System.Random();
-            int randomNumber = random.Next(0, 3);
-        }
-
+    public void Add_package(Package pack) 
+    { 
+        
     }
 
     public List<Package> GetList() { return Package_List; }
