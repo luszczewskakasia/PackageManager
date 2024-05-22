@@ -1,0 +1,34 @@
+{
+    "name": "add_package",
+    "maps": [
+        {
+            "name": "package",
+            "id": "432aa7eb-49f2-4189-b98b-398521f8f0e1",
+            "actions": [
+                {
+                    "name": "add",
+                    "type": "Button",
+                    "id": "fc9c9b9d-b994-47ff-82a7-4c7927201bd9",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "0e8b47f3-f9db-4821-8974-dec54e988fee",
+                    "path": "<Keyboard>/anyKey",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "add",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}

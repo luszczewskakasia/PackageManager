@@ -1,4 +1,4 @@
-using System.Collections;
+锘縰sing System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
@@ -88,6 +88,9 @@ public class Simulation: MonoBehaviour
     public int package_ID;
     private List<Package> packageList;
 
+    public GameObject small_package;
+    //small_package.transform.position = new Vector3(0, 1, 0);
+    //small_package.transform.localScale = new Vector3(1f, 1f, 1f);
 
     private void Start() 
     {
@@ -102,13 +105,13 @@ public class Simulation: MonoBehaviour
         this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
         this.Add_warehouse(new warehouse("ODW", (0), (30), 1, 50, 50, 50));
-        //wok蟪 g髍nego
+        //wok贸艂 g贸rnego
         this.Add_warehouse(new warehouse("GR", (-15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (-15), (15), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (20), 2, 50, 50, 50));
 
-        //wok蟪 lewego
+        //wok贸艂 lewego
         this.Add_warehouse(new warehouse("LEFT", (-20), (15), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-20), (-15), 2, 50, 50, 50));
@@ -116,13 +119,13 @@ public class Simulation: MonoBehaviour
         this.Add_warehouse(new warehouse("LEFT", (-20), (15), 2, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
 
-        //wok蟪 dolnego
+        //wok贸艂 dolnego
         this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (15), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
 
-        //wok蟪 prawego
+        //wok贸艂 prawego
         this.Add_warehouse(new warehouse("RIGHT", (20), (-15), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("RIGHT", (35), (-15), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("RIGHT", (20), (15), -2, 50, 50, 50));
@@ -130,11 +133,28 @@ public class Simulation: MonoBehaviour
         this.Line_start_x = 0;
         this.Line_start_y = 0;
         this.sort_method = "Destination";
+
+        this.small_package = GameObject.CreatePrimitive(PrimitiveType.Cube);
     }
 
-    private void Update()
+    public void Update()
     {
+        if (Input.GetKeyDown(KeyCode.Space)) // Change KeyCode.Space to the key you want to use
+        {
+            // Set the position where the object will be spawned
+            Vector3 spawnPosition = new Vector3(0f, 1f, 0f);
+
+            // Set the scale of the object
+            Vector3 objectScale = new Vector3(1f, 1f, 1f);
+
+            // Instantiate the object
+            GameObject newObject = Instantiate(small_package, spawnPosition, Quaternion.identity);
+
+            // Set the scale of the object
+            newObject.transform.localScale = objectScale;
+        }
     }
+
 
 
     public Dictionary<int, warehouse> GetList() { return Warehouses; }
@@ -157,7 +177,7 @@ public class Simulation: MonoBehaviour
             last_id++;
             return;
         }
-        Debug.Log("Magazyn na magazynie lub Magazyn na 渃ie縞e");
+        Debug.Log("Magazyn na magazynie lub Magazyn na 艣cie偶ce");
     }
     public void Delete_Warehouse(int keyToRemove)
     {
