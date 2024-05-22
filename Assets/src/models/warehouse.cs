@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
-using Parabox.CSG;
-//using UnityEditor.Experimental.GraphView;
-//using UnityEngine.InputSystem;
+using UnityEditor.Experimental.GraphView;
+using UnityEngine.InputSystem;
 
 [System.Serializable]
 
@@ -63,8 +62,8 @@ public class warehouse : MonoBehaviour
             case 1: this.rotation = 180f; break;
             case 2: this.rotation = -90; break;
         }
-        this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots)/45);
-        Debug.Log($"{this.shelves_number}");
+        this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots) / 45);
+        //Debug.Log($"{this.shelves_number}");
 
     }
 
@@ -118,7 +117,7 @@ public class warehouse : MonoBehaviour
         return (length_, width_);
     }
 
-    public void Add_MeshObject(GameObject InstanceML, float MLwidth, float MLlength, float MLheigth, int ID)
+    public int Add_MeshObject(GameObject InstanceML, float MLwidth, float MLlength, float MLheigth, int ID, List<WarehouseFiled> borders)
     {
         this.shelves_number = (int)Math.Ceiling((this.BigPackagesSlots * 3 + Math.Ceiling(this.MediumPackagesSlots * 1.5) + this.SmallPackagesSlots) / 45);
         float start_x = this.LocationX - 2.5f * MLlength - 1.5f * MLheigth;
@@ -127,26 +126,98 @@ public class warehouse : MonoBehaviour
         float new_y;
         float max_offset_w = 0f;
         (int length_, int width_) = optimizerectangle();
-        Debug.Log($"{length_}, {width_}");
+        //Debug.Log($"{length_}, {width_}");
+
+        float offset_w = 16f;
+
+        for (int w_index = 0; w_index < width_; w_index++)
+        {
+            if (w_index % 2 == 0)
+            {
+                offset_w += 20f;
+            }
+            else
+            {
+                offset_w += MLwidth;
+            }
+        }
+        int wall_length = (int)(Mathf.RoundToInt((float)(length_ * MLlength + MLlength + 16f + 2 * 1) / 13.05f) + 1);
+        int wall_width = (int)(Mathf.RoundToInt(offset_w / 13.05f) + 1);
+        offset_w = 0f;
+
+        switch (this.Grid_rotation)
+        {
+            case -1:
+
+                this.maxY = this.Grid_Y + wall_width;
+                this.maxX = this.Grid_X + (wall_length - 1) / 2;
+                this.minY = this.Grid_Y;
+                this.minX = this.Grid_X - (wall_length - 1) / 2;
+
+                break;
+            case 1:
+                this.maxY = this.Grid_Y;
+                this.maxX = this.Grid_X + (wall_length) / 2;
+                this.minY = this.Grid_Y - wall_width;
+                this.minX = this.Grid_X - (wall_length) / 2;
+
+                break;
+            case -2:
+
+                this.maxX = this.Grid_X + wall_width;
+                this.maxY = this.Grid_Y + (wall_length) / 2;
+                this.minX = this.Grid_X;
+                this.minY = this.Grid_Y - (wall_length) / 2;
+
+                break;
+            case 2:
+                this.maxX = this.Grid_X;
+                this.maxY = this.Grid_Y + (wall_length) / 2;
+                this.minX = this.Grid_X - wall_width;
+                this.minY = this.Grid_Y - (wall_length) / 2;
+                break;
+
+        }
+
+        for (int i = 0; i < borders.Count; i++)
+        {
+            if (borders[i].Check_point(this.maxX, this.maxY) || borders[i].Check_point(this.minX, this.maxY)
+                || borders[i].Check_point(this.maxX, this.minY) || borders[i].Check_point(this.minX, this.minY))
+            {
+                return 1;
+            }
+        }
+
+        for (int x_ = this.minX; x_ < this.maxX + 1; x_++)
+        {
+            for (int y_ = this.minY; y_ < this.maxY + 1; y_++)
+            {
+                GameObject ParentLine = GameObject.Find("Sort_Line");
+                Transform childTransform = ParentLine.transform.Find($"Segment{x_}_{y_}");
+                if (childTransform != null)
+                {
+                    return 1;
+                }
+            }
+        }
 
         GameObject instantiatedObject = new GameObject($"Warehouse{this.Destination}{ID}");
         instantiatedObject.transform.position = new Vector3(this.LocationX, 0, this.LocationY);
         int shelf_counter = 0;
         int counter_offset_l = 0;
 
-        //ok na parzyste
-        //float offset_l = -((length_*MLlength + ((length_/2)-1)*(MLlength + 16f))/2);
-        float offset_l = -((length_ * MLlength + (MLlength + 16f)) / 2);
+        offset_w = 0f;
+        float offset_l = 0f;
 
-        Debug.Log($"Magazyn {this.Destination}: Lenght:{length_}, Offset: {offset_l}");
-
-        // TODO: fix with Ceiling i Floor
-        //float offset_l = -((float)(Math.Ceiling((float)(length_ /2)) + (float)(Math.Floor((float)(length_ / 2))) * (MLlength + 16f)) / 2);
-        //int temp_offset_l = -((int)(Math.Ceiling(length_ / 2) + (int)(Math.Floor(length_ / 2)) * (MLlength + 16))) / 2;
-        //float offset_l = temp_offset_l;
-
-
-        float offset_w = 0f;
+        if (length_ % 2 == 0)
+        {
+            offset_l = -((length_ * MLlength + (MLlength + 16f)) / 2);
+            //-(length_ * MLlength + (MLlength + 16f) / 2);
+        }
+        else
+        {
+            offset_l = -((length_ * MLlength + (MLlength + 16f) / 2 + MLlength) / 2);
+        }
         int path_l = length_ / 2;
         for (int l_index = 0; l_index < length_; l_index++)
         {
@@ -197,80 +268,31 @@ public class warehouse : MonoBehaviour
 
         }
 
-        int wall_length = (int)(Mathf.RoundToInt((float)(length_ * MLlength + MLlength + 16f + 2 * 1) / 13.05f) + 1);
-        int wall_width = (int)(Mathf.RoundToInt(max_offset_w / 13.05f) + 1);
+        borders.Add(new WarehouseFiled(this.minX, this.minY, this.maxX, this.maxY));
 
-
-
-
-
-
-        switch (this.Grid_rotation) 
-        { 
-        case -1:
-
-                this.maxY = this.Grid_Y + wall_width;
-                this.maxX = this.Grid_X + (wall_length - 1) / 2;
-                this.minY = this.Grid_Y;
-                this.minX = this.Grid_X - (wall_length - 1) / 2;
-
-                break;
-        case 1:
-                this.maxY = this.Grid_Y ;
-                this.maxX = this.Grid_X + (wall_length) / 2;
-                this.minY = this.Grid_Y - wall_width;
-                this.minX = this.Grid_X - (wall_length) / 2;
-
-                break;
-        case -2:
-
-                this.maxX = this.Grid_X + wall_width;
-                this.maxY = this.Grid_Y + (wall_length) / 2;
-                this.minX = this.Grid_X;
-                this.minY = this.Grid_Y - (wall_length)/2 ;
-
-                break;
-        case 2:
-                this.maxX = this.Grid_X ;
-                this.maxY = this.Grid_Y + (wall_length) / 2;
-                this.minX = this.Grid_X - wall_width;
-                this.minY = this.Grid_Y - (wall_length) / 2;
-                break;
-
-        }
-
-
-        Debug.Log($"{this.Destination}{ID}: Minima: X {this.minX}, Y {this.minY}, Maxima: X {this.maxX}, Y {this.maxY}, Rotation: {this.Grid_rotation}");
-
-
-
-
+        float holeWidth = 6.8f;
+        float holeHeight = 5.0f;
 
         //dluzsze sciany
-        GameObject front_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        GameObject front_wall1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
-        front_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
-        front_wall.transform.localScale = new Vector3(wall_length * 13.05f, 15f, 1f);
-        front_wall.name = $"FrontWall";
-        front_wall.transform.SetParent(instantiatedObject.transform);
+        front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall1.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
+        front_wall1.name = $"FrontWall";
+        front_wall1.transform.SetParent(instantiatedObject.transform);
 
-        // Create a hole within the wall
+        GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
+
+        front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall2.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
+        front_wall2.name = $"FrontWall";
+        front_wall2.transform.SetParent(instantiatedObject.transform);
+
         GameObject hole = GameObject.CreatePrimitive(PrimitiveType.Cube);
-        float holeWidth = 5.0f;
-        float holeHeight = 10.0f;
-        hole.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + 6.75f);
+        hole.transform.position = new Vector3(this.LocationX, 13f, this.LocationY + 6.75f);
         hole.transform.localScale = new Vector3(holeWidth, holeHeight, 1f);
-        hole.transform.SetParent(front_wall.transform);
+        hole.transform.SetParent(instantiatedObject.transform);
 
-        Model result = CSG.Subtract(front_wall, hole);
-        var composite = new GameObject();
-        composite.AddComponent<MeshFilter>().sharedMesh = result.mesh;
-        composite.AddComponent<MeshRenderer>().sharedMaterials = result.materials.ToArray();
-        front_wall.transform.position = composite.transform.position;
-        composite.transform.SetParent(instantiatedObject.transform);
-
-        Destroy(front_wall);
-        Destroy(hole);
 
         GameObject back_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         back_wall.transform.position = new Vector3(this.LocationX, 8f, this.LocationY + wall_width * 13.05f);
@@ -296,7 +318,6 @@ public class warehouse : MonoBehaviour
         GameObject left_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
         left_wall.transform.position = new Vector3(this.LocationX + wall_length * 13.05f / 2, 8f, this.LocationY + wall_width * 13.05f / 2 + MLlength / 4);
         left_wall.transform.localScale = new Vector3(1f, 15f, wall_width * 13.05f - MLlength / 2 + 1);
-        left_wall.name = $"LeftWall";
         left_wall.transform.SetParent(instantiatedObject.transform);
 
         GameObject right_wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
@@ -309,8 +330,12 @@ public class warehouse : MonoBehaviour
 
         GameObject SortLineObject = GameObject.Find("SortingLine");
         SortLine Sorting = SortLineObject.GetComponent<SortLine>();
-        Debug.Log("Sorting");
-        Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX,this.maxY,this.minY);
+        //Debug.Log("Sorting");
+
+        Sorting.NewVertex(this.Grid_X, this.Grid_Y, this.Grid_rotation, this.maxX, this.minX, this.maxY, this.minY, borders);
+
+        return 0;
+
     }
 
     public void UpdateMeshRotation(float posX, float posY)
