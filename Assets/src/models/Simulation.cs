@@ -4,6 +4,7 @@ using UnityEngine;
 using Newtonsoft.Json;
 using UnityEditor.Experimental.GraphView;
 using System.Threading;
+using System.Drawing;
 
 
 [System.Serializable]
@@ -12,16 +13,15 @@ public class KeyValuePair
     public int key;
     public warehouse val;
 
-    public KeyValuePair(int key_, warehouse w_) 
-    { 
+    public KeyValuePair(int key_, warehouse w_)
+    {
         this.key = key_;
-        this.val = w_; 
+        this.val = w_;
     }
 }
 
-
 [System.Serializable]
-public class ID_List_To_Delete 
+public class ID_List_To_Delete
 {
     public List<int> IDs;
 
@@ -44,12 +44,12 @@ public class WarehouseFiled
     }
     public bool Check_point(int x, int y)
     {
-        if (x <= MaxX && x >= MinX && y <= MaxY && y >= MinY ) { return true; }
+        if (x <= MaxX && x >= MinX && y <= MaxY && y >= MinY) { return true; }
         else { return false; }
     }
     public bool Check_edge(Node point1, Node point2)
     {
-        if ((point1.y == point2.y && point1.y < MaxY && point1.y > MinY) && ((point1.x > MaxX && point2.x < MinX)||(point2.x > MaxX && point1.x < MinX)) ) 
+        if ((point1.y == point2.y && point1.y < MaxY && point1.y > MinY) && ((point1.x > MaxX && point2.x < MinX) || (point2.x > MaxX && point1.x < MinX)))
         {
             return true;
         }
@@ -60,20 +60,26 @@ public class WarehouseFiled
 
 
         else { return false; }
-    } 
+    }
 };
 
 
 
-public class Simulation: MonoBehaviour
+public class Simulation : MonoBehaviour
 {
     [JsonProperty]
-    public Dictionary<int,warehouse> Warehouses { get; set; }
-
+    public Dictionary<int, warehouse> Warehouses { get; set; }
     public string sort_method;
     public int Line_start_x;
     public int Line_start_y;
     private int last_id = 0;
+    private int last_pack_id = 0;
+    [JsonIgnore]
+    public GameObject Small_Package_Mesh_object;
+    [JsonIgnore]
+    public GameObject Medium_Package_Mesh_object;
+    [JsonIgnore]
+    public GameObject Big_Package_Mesh_object;
     [JsonIgnore]
     public GameObject Small_Mesh;
     [JsonIgnore]
@@ -85,33 +91,27 @@ public class Simulation: MonoBehaviour
     [JsonIgnore]
     public float ML_H;
     private List<WarehouseFiled> warehouseFileds;
-    public int package_ID;
-    private List<Package> packageList;
 
-    public GameObject small_package;
-    //small_package.transform.position = new Vector3(0, 1, 0);
-    //small_package.transform.localScale = new Vector3(1f, 1f, 1f);
 
-    private void Start() 
+    private void Start()
     {
-        this.packageList = new List<Package>();
 
         this.Warehouses = new Dictionary<int, warehouse>();
         this.warehouseFileds = new List<WarehouseFiled>();
-        
 
         // start
         this.Add_warehouse(new warehouse("ODW", (-20), (0), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
         this.Add_warehouse(new warehouse("ODW", (0), (30), 1, 50, 50, 50));
-        //wokół górnego
+        //wokó³ górnego
         this.Add_warehouse(new warehouse("GR", (-15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (-15), (15), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("GR", (15), (20), 2, 50, 50, 50));
 
-        //wokół lewego
+
+        //wokó³ lewego
         this.Add_warehouse(new warehouse("LEFT", (-20), (15), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-20), (-15), 2, 50, 50, 50));
@@ -119,13 +119,13 @@ public class Simulation: MonoBehaviour
         this.Add_warehouse(new warehouse("LEFT", (-20), (15), 2, 50, 50, 50));
         this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
 
-        //wokół dolnego
+        //wokó³ dolnego
         this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (15), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
 
-        //wokół prawego
+        //wokó³ prawego
         this.Add_warehouse(new warehouse("RIGHT", (20), (-15), -2, 50, 50, 50));
         this.Add_warehouse(new warehouse("RIGHT", (35), (-15), -1, 50, 50, 50));
         this.Add_warehouse(new warehouse("RIGHT", (20), (15), -2, 50, 50, 50));
@@ -133,51 +133,34 @@ public class Simulation: MonoBehaviour
         this.Line_start_x = 0;
         this.Line_start_y = 0;
         this.sort_method = "Destination";
-
-        this.small_package = GameObject.CreatePrimitive(PrimitiveType.Cube);
     }
 
-    public void Update()
+    private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Space)) // Change KeyCode.Space to the key you want to use
-        {
-            // Set the position where the object will be spawned
-            Vector3 spawnPosition = new Vector3(0f, 1f, 0f);
-
-            // Set the scale of the object
-            Vector3 objectScale = new Vector3(1f, 1f, 1f);
-
-            // Instantiate the object
-            GameObject newObject = Instantiate(small_package, spawnPosition, Quaternion.identity);
-
-            // Set the scale of the object
-            newObject.transform.localScale = objectScale;
-        }
     }
-
 
 
     public Dictionary<int, warehouse> GetList() { return Warehouses; }
     public void SetList(Dictionary<int, warehouse> data) { Warehouses = data; }
-    public void set_start(int x, int y) 
+    public void set_start(int x, int y)
     {
         this.Line_start_x = x;
         this.Line_start_y = y;
     }
-    public void set_method(string meth) 
+    public void set_method(string meth)
     {
         this.sort_method = meth;
     }
-    public void Add_warehouse(warehouse New_Whouse) 
+    public void Add_warehouse(warehouse New_Whouse)
     {
-        int destroy = New_Whouse.Add_MeshObject(ML_Mesh,ML_W,ML_L,ML_H, last_id, warehouseFileds);
+        int destroy = New_Whouse.Add_MeshObject(ML_Mesh, ML_W, ML_L, ML_H, last_id, warehouseFileds);
         if (destroy == 0)
         {
             this.Warehouses[last_id] = New_Whouse;
             last_id++;
             return;
         }
-        Debug.Log("Magazyn na magazynie lub Magazyn na ścieżce");
+        Debug.Log("Magazyn na magazynie lub Magazyn na œcie¿ce");
     }
     public void Delete_Warehouse(int keyToRemove)
     {
@@ -192,19 +175,6 @@ public class Simulation: MonoBehaviour
             Warehouses.Remove(keyToRemove);
         }
     }
-
-    public void tracing_packages ()
-    {
-        //this.Warehouses = new 
-
-    }
-    //public void add_package(int size, int WarehouseID)
-    //{
-    //    Pakckage new_package = new Package(size, WarehouseID);
-    //    packageList.Add(newPackage);
-
-    //}
-
     public string ToJson()
     {
         string sb = "{ \"Warehouses\": [";
@@ -236,37 +206,66 @@ public class Simulation: MonoBehaviour
         sb += "]}";
 
         return sb;
-        Debug.Log(sb);
     }
-    //{
-    //    var warehousePackagesDict = new Dictionary<string, Dictionary<string, int>>();
-    //    Debug.Log("XD");
-    //    foreach (var kvp in Warehouses)
-    //    {
-    //        Debug.Log("XDD");
-    //        warehouse warehouse_ = kvp.Value;
+    public void Add_package_instance(List<int> size_list, List<string> destination_list)
+    {
+        int New_Packeges_Count = 0;
 
-    //        var packagesDict = new Dictionary<string, int>
-    //        {
-    //            { "BigPackagesSlots", warehouse_.BigPackagesSlots },
-    //            { "MediumPackagesSlots", warehouse_.MediumPackagesSlots },
-    //            { "SmallPackagesSlots", warehouse_.SmallPackagesSlots }
-    //        };
+        if (size_list.Count > destination_list.Count) { New_Packeges_Count = destination_list.Count; }
+        else { New_Packeges_Count = size_list.Count; }
+        for (int i = 0; i < New_Packeges_Count; i++)
+        {
+            int? Final_warehouse_id = null;
+            string Pack_id = "";
+            foreach (int j in this.Warehouses.Keys)
+            {
+                if (!Warehouses[j].PackegesOverload[size_list[i]])
+                {
+                    Final_warehouse_id = j;
+                    Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
+                    last_pack_id++;
+                    break;
+                }
+            }
+            if (Final_warehouse_id != null)
+            {
+                GameObject New_Package_mesh;
+                Package New_Package;
+                switch (size_list[i])
+                {
+                    case 0:
+                        New_Package_mesh = Instantiate(Small_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                    case 1:
+                        New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                    case 2:
+                        New_Package_mesh = Instantiate(Big_Package_Mesh_object,
+                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
+                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
+                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                        break;
+                }
 
-    //        warehousePackagesDict[warehouse_.Destination] = packagesDict;
-    //    }
+            }
+        }
 
-    //    string jsonString = JsonConvert.SerializeObject(warehousePackagesDict);
-    //    return jsonString;
-    //}
+
+
+
+    }
+
 
 }
-
-
-
-
-
-
 //public string Destination;
 //public int BigPackagesSlots;
 //public int MediumPackagesSlots;

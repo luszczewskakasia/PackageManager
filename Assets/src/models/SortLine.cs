@@ -10,8 +10,6 @@ using TreeEditor;
 using Unity.VisualScripting;
 
 [System.Serializable]
-
-
 public struct Edge
 {
     public int dir;  
@@ -43,12 +41,7 @@ public struct Node
         final = false;
         from_ = -1;
     }
-
-
 }
-
-
-
 
 public class SortLine : MonoBehaviour
 {
@@ -63,7 +56,6 @@ public class SortLine : MonoBehaviour
     public GameObject Turn_Mesh;
 
     private GameObject SortLine_Mesh;
-
 
     public void Awake()
     {
@@ -834,8 +826,6 @@ public class SortLine : MonoBehaviour
             return path;
         return new List<Node>();
     }
-
-
 }
 
 
