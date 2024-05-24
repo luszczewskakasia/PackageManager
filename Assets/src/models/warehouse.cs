@@ -18,7 +18,7 @@ public class warehouse : MonoBehaviour
     public Dictionary<string, Shelf> Shelf_List;
 
     //dane operacyjne
-    private List<int> Empty_slots;
+    public List<int> Empty_slots;
     public List<bool> PackegesOverload;
     private Dictionary<string, int> storageList;
     [JsonIgnore]
@@ -29,8 +29,8 @@ public class warehouse : MonoBehaviour
     public int Grid_Y;
     public int Grid_rotation;
 
-    private float LocationX;
-    private float LocationY;
+    public float LocationX;
+    public float LocationY;
     private float rotation;
 
     public List<Node> path;
@@ -67,7 +67,6 @@ public class warehouse : MonoBehaviour
             case 2: this.rotation = -90; break;
         }
         this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots) / 45);
-        //Debug.Log($"{this.shelves_number}");
 
     }
 
