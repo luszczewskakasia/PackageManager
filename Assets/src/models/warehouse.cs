@@ -85,14 +85,14 @@ public class warehouse : MonoBehaviour
     }
 
     //dodaj paczkê nadaj ID
-    public void New_packege(int size, Package new_packge)
+    public void New_packege(int size, queue_struct new_packge)
     {
-        //if (!PackegesOverload[size])
-        //{
-        //    Empty_slots[size]--;
-        //    if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
-        //    new_packge.setID("KRK", 12);
-        //}
+        if (!PackegesOverload[size])
+        {
+            Empty_slots[size]--;
+            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+            this.storageList.Add(new_packge.ID, 1);
+        }
     }
 
     public warehouse get()
