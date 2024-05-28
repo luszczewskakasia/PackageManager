@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using UnityEditor.Experimental.GraphView;
 using System.Threading;
 using System.Drawing;
+using Unity.VisualScripting;
 
 
 [System.Serializable]
@@ -74,6 +75,7 @@ public class Simulation: MonoBehaviour
     public int Line_start_y;
     private int last_id = 0;
     private int last_pack_id = 0;
+    private float spawn_delay;
     [JsonIgnore]
     public GameObject Small_Package_Mesh_object;
     [JsonIgnore]
@@ -91,7 +93,7 @@ public class Simulation: MonoBehaviour
     [JsonIgnore]
     public float ML_H;
     private List<WarehouseFiled> warehouseFileds;
-
+    private List<queue_struct> Objects_to_spawn;
 
     private void Start() 
     {
@@ -100,43 +102,94 @@ public class Simulation: MonoBehaviour
         this.warehouseFileds = new List<WarehouseFiled>();
 
         // start
-        this.Add_warehouse(new warehouse("ODW", (-20), (0), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("ODW", (0), (-50), -1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("ODW", (50), (0), 2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("ODW", (0), (30), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("KRK", (-20), (0), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("RZE", (0), (-50), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LUB", (50), (0), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("BIAL", (0), (30), 1, 50, 50, 50));
         //wokó³ górnego
-        this.Add_warehouse(new warehouse("GR", (-15), (35), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("GR", (15), (35), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("GR", (-15), (15), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("GR", (15), (20), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("GORZ", (-15), (35), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("BYD", (15), (35), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("GDA", (-15), (15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("OLSZ", (15), (20), 2, 50, 50, 50));
 
 
         //wokó³ lewego
-        this.Add_warehouse(new warehouse("LEFT", (-20), (15), 1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("LEFT", (-20), (-15), 2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("LEFT", (-35), (-15), -1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("LEFT", (-20), (15), 2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("LEFT", (-35), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("KAT", (-20), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("OPO", (-35), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("WRC", (-20), (-15), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("SZCZ", (-35), (-15), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("POZ", (-20), (15), 2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("LOD", (-35), (15), 1, 50, 50, 50));
 
         //wokó³ dolnego
-        this.Add_warehouse(new warehouse("DOL", (15), (-65), 1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("DOL", (15), (-50), -1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("DOL", (-15), (-50), -1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("DOL", (-15), (-65), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("WAR", (15), (-65), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("KIE", (15), (-50), -1, 50, 50, 50));
+
+        this.Add_warehouse(new warehouse("TOR", (-15), (-50), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("ZIEL", (-15), (-65), 1, 50, 50, 50));
 
         //wokó³ prawego
-        this.Add_warehouse(new warehouse("RIGHT", (20), (-15), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("RIGHT", (35), (-15), -1, 50, 50, 50));
-        this.Add_warehouse(new warehouse("RIGHT", (20), (15), -2, 50, 50, 50));
-        this.Add_warehouse(new warehouse("RIGHT", (35), (15), 1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("ZAK", (20), (-15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("CZES", (35), (-15), -1, 50, 50, 50));
+        this.Add_warehouse(new warehouse("PRZEM", (20), (15), -2, 50, 50, 50));
+        this.Add_warehouse(new warehouse("KOSZ", (35), (15), 1, 50, 50, 50));
         this.Line_start_x = 0;
         this.Line_start_y = 0;
+        this.spawn_delay = 3;
+        this.Objects_to_spawn = new List<queue_struct>() ;
+
+        //Dodawanie Paczek:
+
+        List<int> sizes = new List<int> { 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 };
+        List<string> Destinations = new List<string> { "KRK", "RZE", "LUB", "BIAL", "GORZ", "BYD", "GDA", "OLSZ", "KAT", "OPO", "WRC", "SZCZ", "POZ", "LOD", "WAR", "KIE", "TOR", "ZIEL", "ZAK", "CZES", "PRZEM", "KOSZ" };
+        //Add_package_instance(sizes, Destinations);
+        //List<int> sizes = new List<int> { 0 };
+        //List<string> Destinations = new List<string> { "BYD" };
+        Add_package_instance(sizes, Destinations);
+
         this.sort_method = "Destination";
     }
 
-    private void Update()
+    void Update() 
     {
+        if(this.spawn_delay > 3) 
+        {
+             if (this.Objects_to_spawn.Count > 0)
+             {
+                queue_struct First_in_queue = this.Objects_to_spawn[0];
+                GameObject New_Package_mesh;
+                Package package;
+                switch (First_in_queue.size)
+                {
+                    case 0:
+                        New_Package_mesh = Instantiate(Small_Package_Mesh_object,
+                            new Vector3(Line_start_x, 3.5f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        package = New_Package_mesh.GetComponent<Package>();
+                        package.Initialize(First_in_queue);
+                        package.Add_Mesh_to_Package(New_Package_mesh);
+                        break;
+                    case 1:
+                        New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
+                            new Vector3(Line_start_x, 4f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        package = New_Package_mesh.GetComponent<Package>();
+                        package.Initialize(First_in_queue);
+                        package.Add_Mesh_to_Package(New_Package_mesh);
+
+                        break;
+                    case 2:
+                        New_Package_mesh = Instantiate(Big_Package_Mesh_object,
+                            new Vector3(Line_start_x, 4.5f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                        package = New_Package_mesh.GetComponent<Package>();
+                        package.Initialize(First_in_queue);
+                        package.Add_Mesh_to_Package(New_Package_mesh);
+
+                        break;
+                }
+                Objects_to_spawn.RemoveAt(0);   
+            }
+            this.spawn_delay = 0;
+        }
+        this.spawn_delay += Time.deltaTime;
     }
 
 
@@ -160,7 +213,7 @@ public class Simulation: MonoBehaviour
             last_id++;
             return;
         }
-        Debug.Log("Magazyn na magazynie lub Magazyn na œcie¿ce");
+        //Debug.Log("Magazyn na magazynie lub Magazyn na œcie¿ce");
     }
     public void Delete_Warehouse(int keyToRemove)
     {
@@ -210,52 +263,49 @@ public class Simulation: MonoBehaviour
      public void Add_package_instance(List<int> size_list,List<string> destination_list) 
     {
         int New_Packeges_Count=0;
-
         if (size_list.Count > destination_list.Count){ New_Packeges_Count = destination_list.Count; }
         else { New_Packeges_Count = size_list.Count; }
         for(int i= 0; i < New_Packeges_Count; i++) 
         {
-            int? Final_warehouse_id = null;
-            string Pack_id = "";
-            foreach (int j in this.Warehouses.Keys) 
             {
-                if (! Warehouses[j].PackegesOverload[size_list[i]])
-                { 
-                   Final_warehouse_id = j; 
-                   Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
-                   last_pack_id ++;
-                   break;
-                } 
-            }
-            if (Final_warehouse_id != null) 
-            {
-                GameObject New_Package_mesh;
-                Package New_Package;
-                switch (size_list[i]) 
+                int? Final_warehouse_id = null;
+                string Pack_id = "";
+                foreach (int j in this.Warehouses.Keys)
                 {
-                    case 0:
-                        New_Package_mesh = Instantiate(Small_Package_Mesh_object,
-                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
-                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh) ;
-                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                    if (Warehouses[j].Destination == destination_list[i] && !Warehouses[j].PackegesOverload[size_list[i]])
+                    {
+                        Final_warehouse_id = j;
+                        Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
+                        last_pack_id++;
                         break;
-                    case 1:
-                        New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
-                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
-                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
-                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
-                        break;
-                    case 2:
-                        New_Package_mesh = Instantiate(Big_Package_Mesh_object,
-                            new Vector3(Line_start_x, 5, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        New_Package = new Package(size_list[i], Pack_id, (int)Final_warehouse_id,
-                        this.Warehouses[(int)Final_warehouse_id].path, New_Package_mesh);
-                        Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
-                        break;
+                    }
                 }
+                if (Final_warehouse_id != null)
+                {
+                    queue_struct New_Package;
+                    switch (size_list[i])
+                    {
+                        case 0:
+                            New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
+                            this.Warehouses[(int)Final_warehouse_id].path);
+                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                            Objects_to_spawn.Add(New_Package);
+                            break;
+                        case 1:
+                            New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
+                            this.Warehouses[(int)Final_warehouse_id].path);
+                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                            Objects_to_spawn.Add(New_Package);
+                            break;
+                        case 2:
+                            New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
+                            this.Warehouses[(int)Final_warehouse_id].path);
+                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
+                            Objects_to_spawn.Add(New_Package);
+                            break;
+                    }
 
+                }
             }
         }
 
