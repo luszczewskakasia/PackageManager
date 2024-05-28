@@ -72,7 +72,7 @@ public class Simulation : MonoBehaviour
     public string sort_method;
     public int Line_start_x;
     public int Line_start_y;
-    private int last_id = 0;
+    public int last_id = 0;
     private int last_pack_id = 0;
     [JsonIgnore]
     public GameObject Small_Package_Mesh_object;
@@ -91,6 +91,7 @@ public class Simulation : MonoBehaviour
     [JsonIgnore]
     public float ML_H;
     private List<WarehouseFiled> warehouseFileds;
+    public GameObject robot_prefab;
 
 
     private void Start()
@@ -153,14 +154,14 @@ public class Simulation : MonoBehaviour
     }
     public void Add_warehouse(warehouse New_Whouse)
     {
-        int destroy = New_Whouse.Add_MeshObject(ML_Mesh, ML_W, ML_L, ML_H, last_id, warehouseFileds);
+        int destroy = New_Whouse.Add_MeshObject(ML_Mesh, ML_W, ML_L, ML_H, last_id, warehouseFileds, robot_prefab);
         if (destroy == 0)
         {
             this.Warehouses[last_id] = New_Whouse;
             last_id++;
             return;
         }
-        Debug.Log("Magazyn na magazynie lub Magazyn na œcie¿ce");
+        Debug.Log("Magazyn na magazynie lub Magazyn");
     }
     public void Delete_Warehouse(int keyToRemove)
     {
@@ -266,19 +267,3 @@ public class Simulation : MonoBehaviour
 
 
 }
-//public string Destination;
-//public int BigPackagesSlots;
-//public int MediumPackagesSlots;
-//public int SmallPackagesSlots;
-
-////dane operacyjne
-//private List<int> Empty_slots;
-//private List<bool> PackegesOverload;
-//private Dictionary<string, int> storageList;
-//[JsonIgnore]
-//public GameObject instantiatedObject;
-
-////dane z linii produkcyjnej
-//public float LocationX;
-//public float LocationY;
-//public float rotation;

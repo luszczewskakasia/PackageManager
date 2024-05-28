@@ -33,8 +33,42 @@ public class Shelf
 
     }
 
+    private int totalCapacity;
+    private Dictionary<int, List<Package>> packagesBySize;
 
+    public void Cap(int capacity)
+    {
+        totalCapacity = capacity;
+        packagesBySize = new Dictionary<int, List<Package>>()
+        {
+            { 0, new List<Package>() }, // Big packages
+            { 1, new List<Package>() }, // Medium packages
+            { 2, new List<Package>() }  // Small packages
+        };
+    }
 
+    public void AddPackage(int size, Package package)
+    {
+        if (packagesBySize.ContainsKey(size))
+        {
+            packagesBySize[size].Add(package);
+        }
+    }
 
+    public int GetPackageCount(int size)
+    {
+        if (packagesBySize.ContainsKey(size))
+        {
+            return packagesBySize[size].Count;
+        }
+        return 0;
+    }
+
+    public int GetEmptySlots()
+    {
+        // Assuming each slot can hold one package, this can be adjusted as needed
+        int usedSlots = packagesBySize.Values.Sum(p => p.Count);
+        return totalCapacity - usedSlots;
+    }
 
 }

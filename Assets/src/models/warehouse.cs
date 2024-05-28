@@ -42,6 +42,8 @@ public class warehouse : MonoBehaviour
 
     public int shelves_number;
 
+    public Robot robot;
+
 
     public warehouse(string Destination, int X, int Y, int rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
     {
@@ -86,12 +88,31 @@ public class warehouse : MonoBehaviour
     //dodaj paczkê nadaj ID
     public void New_packege(int size, Package new_packge)
     {
-        //if (!PackegesOverload[size])
-        //{
-        //    Empty_slots[size]--;
-        //    if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
-        //    new_packge.setID("KRK", 12);
-        //}
+        if (!PackegesOverload[size])
+        {
+            Empty_slots[size]--;
+            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+        }
+
+        foreach (var shelfEntry in this.Shelf_List)
+        {
+            string shelfKey = shelfEntry.Key;
+            Cap shelfValue = shelfEntry.Value;
+
+            int emptySlots = shelfValue.GetEmptySlots(size);
+            if (emptySlots > 0)
+            {
+                shelfValue.AddPackage(size, new_packge);
+                Debug.Log($"Package added to shelf: {shelfKey}");
+
+                int bigPackagesCount = shelfValue.GetPackageCount(0);
+                int mediumPackagesCount = shelfValue.GetPackageCount(1);
+                int smallPackagesCount = shelfValue.GetPackageCount(2);
+
+                Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
+                break;
+            }
+        }
     }
 
     public warehouse get()
@@ -120,7 +141,7 @@ public class warehouse : MonoBehaviour
         return (length_, width_);
     }
 
-    public int Add_MeshObject(GameObject InstanceML, float MLwidth, float MLlength, float MLheigth, int ID, List<WarehouseFiled> borders)
+    public int Add_MeshObject(GameObject InstanceML, float MLwidth, float MLlength, float MLheigth, int ID, List<WarehouseFiled> borders, GameObject robot_prefab)
     {
         this.shelves_number = (int)Math.Ceiling((this.BigPackagesSlots * 3 + Math.Ceiling(this.MediumPackagesSlots * 1.5) + this.SmallPackagesSlots) / 45);
         float start_x = this.LocationX - 2.5f * MLlength - 1.5f * MLheigth;
@@ -319,7 +340,6 @@ public class warehouse : MonoBehaviour
         right_wall.name = $"RightWall";
         right_wall.transform.SetParent(instantiatedObject.transform);
 
-        instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 
         GameObject SortLineObject = GameObject.Find("SortingLine");
         SortLine Sorting = SortLineObject.GetComponent<SortLine>();
@@ -334,6 +354,15 @@ public class warehouse : MonoBehaviour
         //}
         //str += " ]";
         //Debug.Log(str);
+
+        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 0, this.LocationY + 8.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
+        cube.transform.SetParent(instantiatedObject.transform);
+        Robot robot = cube.GetComponent<Robot>();
+        robot.robot_prefab = cube;
+
+        instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
+
+
         return 0;
 
     }
