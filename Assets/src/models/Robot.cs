@@ -16,6 +16,8 @@ public class Robot : MonoBehaviour
     public int go_back_step = 0;
     public List<Vector3> put_pack_commands;
     public List<Vector3> go_back_commands;
+    public float put_time;
+    public bool animations;
 
 
     private void Start()
@@ -27,7 +29,7 @@ public class Robot : MonoBehaviour
         if (trigger)
         {
             Vector3 final_vector = this.put_pack_commands[put_pack_on_shelf_step];
-
+            Animator animator = robot_prefab.GetComponent<Animator>();
             if (put_pack_on_shelf_step == 0 || put_pack_on_shelf_step == 2 || put_pack_on_shelf_step == 4)
             {
                 if (Math.Abs(robot_prefab.transform.rotation.eulerAngles.y - final_vector.y) > 3)
@@ -46,9 +48,6 @@ public class Robot : MonoBehaviour
             if (put_pack_on_shelf_step == 1 || put_pack_on_shelf_step == 3 || put_pack_on_shelf_step == 5)
             {
 
-                Debug.Log($"Finalna pozycja {final_vector}");
-                Debug.Log($"Pozycja Robota {robot_prefab.transform.position}");
-                Debug.Log($"Ró¿nica {robot_prefab.transform.position.x - final_vector.x}, {robot_prefab.transform.position.z - final_vector.z} ");
 
                 if ((Math.Abs(final_vector.x - robot_prefab.transform.position.x) > 0.4f) || (Math.Abs(final_vector.z - robot_prefab.transform.position.z) > 0.4f))
                 {
@@ -62,7 +61,33 @@ public class Robot : MonoBehaviour
                         put_pack_on_shelf_step += 1;
                     }
                 }
+
             }
+
+            else {
+
+                if (put_pack_on_shelf_step == put_pack_commands.Count - 1)
+                {
+                    Debug.Log($"KoniecListy");
+
+                    if (!animator.IsInTransition(0) && !animations)
+                    {
+                        Debug.Log($"W transition");
+                        animations = true;
+                        animator.SetInteger("Height", 3);
+                        animator.SetBool("Ready_to_put", true);
+                    }
+                    else 
+                    {
+                        Debug.Log($"po wywo³aniu ");
+                        animator.SetBool("Ready_to_put", false);
+                    }
+                }
+
+            }
+
+
+
         }
         else
         {
