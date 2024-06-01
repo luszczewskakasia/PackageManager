@@ -147,6 +147,7 @@ public class Package:MonoBehaviour
             if (Wait_for_bot)
             {
                 Pack_in_robot = true;
+                Vector3 shelf_coords = Pack_to_Shelf();
                 Pack_to_bot();
             }
         }
@@ -155,6 +156,14 @@ public class Package:MonoBehaviour
 
 
 
+
+    }
+
+    public Vector3 Pack_to_Shelf() 
+    {
+        GameObject simGO = GameObject.Find("Simulation");
+        Simulation sim = simGO.GetComponent<Simulation>();
+        Vector3 sim.Warehouses[warehouseID].
 
     }
 
@@ -168,8 +177,6 @@ public class Package:MonoBehaviour
         {
             rob.Take_pack(this);
         }
-
-
     }
 
     private void OnTriggerEnter(Collider other)
