@@ -49,7 +49,6 @@ public class Package:MonoBehaviour
         this.road = init_data.road;
         this.Destination_achived = false;
         this.current_location = 0;
-        Debug.Log($" D³ugoœæ drogi {road.Count}");
         foreach (Node nd in road) { Debug.Log($" {nd.Input_dir} ,{nd.Index}"); }
 
     }

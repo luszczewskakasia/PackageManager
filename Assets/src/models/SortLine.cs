@@ -189,7 +189,7 @@ public class SortLine : MonoBehaviour
                     if ((MainDir == -2 && SecondDir == -1) || (MainDir == -1 && SecondDir == 2) || (MainDir == 1 && SecondDir == -2) || (MainDir == 2 && SecondDir == 1)) { LeftSide = true; }
 
                     CorrectCross = (LeftSide) ? CrossLeft_Mesh : CrossRight_Mesh;
-                    rotationX = (LeftSide) ? 90f : 270f;
+                    rotationX = (LeftSide) ? -90f : 90;
                 }
                 if (Edge1Dir == -Edge2Dir)
                 {
@@ -198,10 +198,10 @@ public class SortLine : MonoBehaviour
                 }
                 switch (StartNode.Input_dir)
                 {
-                    case -1: rotation = 0f; break;
-                    case -2: rotation = 90f; break;
-                    case 1: rotation = 180f; break;
-                    case 2: rotation = 270f; break;
+                    case -1: rotation = -90f; break;
+                    case -2: rotation = 0f; break;
+                    case 1: rotation = 90f; break;
+                    case 2: rotation = 180f; break;
                 }
 
                 if (CorrectCross == null)
@@ -210,14 +210,14 @@ public class SortLine : MonoBehaviour
                 if (CorrectCross == T_Cross_Mesh) 
                 {
                     Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
-                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation, 0)));
+                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation+90, 0)));
                     LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
                     LinePart.transform.SetParent(Egde_.transform);
                 }
                 if (CorrectCross == CrossLeft_Mesh || CorrectCross == CrossRight_Mesh)
                 {
                     Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
-                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(-rotation, 0, -90f)));
+                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(0, rotation, rotationX)));
                     LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
                     LinePart.transform.SetParent(Egde_.transform);
                 }
