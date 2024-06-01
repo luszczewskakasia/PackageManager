@@ -138,7 +138,7 @@ public class Simulation : MonoBehaviour
         this.Line_start_y = 0;
         this.spawn_delay = 3;
         this.Objects_to_spawn = new List<queue_struct>();
-
+        this.last_pack_id = 0;
         //Dodawanie Paczek:
 
         List<int> sizes = new List<int> { 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 };
@@ -188,8 +188,6 @@ public class Simulation : MonoBehaviour
                         break;
                 }
                 Objects_to_spawn.RemoveAt(0);
-
-
             }
             this.spawn_delay = 0;
         }
@@ -316,22 +314,4 @@ public class Simulation : MonoBehaviour
     {
 
     }
-
-
 }
-//public string Destination;
-//public int BigPackagesSlots;
-//public int MediumPackagesSlots;
-//public int SmallPackagesSlots;
-
-////dane operacyjne
-//private List<int> Empty_slots;
-//private List<bool> PackegesOverload;
-//private Dictionary<string, int> storageList;
-//[JsonIgnore]
-//public GameObject instantiatedObject;
-
-////dane z linii produkcyjnej
-//public float LocationX;
-//public float LocationY;
-//public float rotation;

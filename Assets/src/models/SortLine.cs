@@ -159,10 +159,10 @@ public class SortLine : MonoBehaviour
                 }
                 else
                 {
-                    if ((EdgeDir == -2 && StartNode.Input_dir == 1) || (EdgeDir == -1 && StartNode.Input_dir == 2)) { rotation = 90f; } //przypadek 3
-                    if ((EdgeDir == -2 && StartNode.Input_dir == -1) || (EdgeDir == 1 && StartNode.Input_dir == 2)) { rotation = 180f; }
-                    if ((EdgeDir == 2 && StartNode.Input_dir == -1) || (EdgeDir == 1 && StartNode.Input_dir == -2)) { rotation = 270f; } //przypadek 1 
-                    if ((EdgeDir == 2 && StartNode.Input_dir == 1) || (EdgeDir == -1 && StartNode.Input_dir == -2)) { rotation = 0f; }
+                    if ((EdgeDir == -2 && StartNode.Input_dir == 1) || (EdgeDir == -1 && StartNode.Input_dir == 2)) { rotation = 180f; } //przypadek 3
+                    if ((EdgeDir == -2 && StartNode.Input_dir == -1) || (EdgeDir == 1 && StartNode.Input_dir == 2)) { rotation = -90f; }
+                    if ((EdgeDir == 2 && StartNode.Input_dir == -1) || (EdgeDir == 1 && StartNode.Input_dir == -2)) { rotation = 0f; } //przypadek 1 
+                    if ((EdgeDir == 2 && StartNode.Input_dir == 1) || (EdgeDir == -1 && StartNode.Input_dir == -2)) { rotation = 90f; }
                     Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
                     LinePart = Instantiate(Turn_Mesh, Location, Quaternion.Euler(new Vector3(0, rotation, 90)));
                     LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
@@ -189,26 +189,35 @@ public class SortLine : MonoBehaviour
                     if ((MainDir == -2 && SecondDir == -1) || (MainDir == -1 && SecondDir == 2) || (MainDir == 1 && SecondDir == -2) || (MainDir == 2 && SecondDir == 1)) { LeftSide = true; }
 
                     CorrectCross = (LeftSide) ? CrossLeft_Mesh : CrossRight_Mesh;
-                    rotationX = (LeftSide) ? 90f : 270f;
+                    rotationX = (LeftSide) ? -90f : 90;
                 }
                 if (Edge1Dir == -Edge2Dir)
                 {
                     CorrectCross = T_Cross_Mesh;
+                    rotationX = -90f;
                 }
                 switch (StartNode.Input_dir)
                 {
-                    case -1: rotation = 0f; break;
-                    case -2: rotation = 90f; break;
-                    case 1: rotation = 180f; break;
-                    case 2: rotation = 270f; break;
+                    case -1: rotation = -90f; break;
+                    case -2: rotation = 0f; break;
+                    case 1: rotation = 90f; break;
+                    case 2: rotation = 180f; break;
                 }
 
                 if (CorrectCross == null)
                 {
                 }
-                else {
+                if (CorrectCross == T_Cross_Mesh) 
+                {
                     Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
-                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation, 0)));
+                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(rotationX, rotation+90, 0)));
+                    LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
+                    LinePart.transform.SetParent(Egde_.transform);
+                }
+                if (CorrectCross == CrossLeft_Mesh || CorrectCross == CrossRight_Mesh)
+                {
+                    Delete_old_segment($"Segment{StartNode.x}_{StartNode.y}");
+                    LinePart = Instantiate(CorrectCross, Location, Quaternion.Euler(new Vector3(0, rotation, rotationX)));
                     LinePart.name = $"Segment{StartNode.x}_{StartNode.y}";
                     LinePart.transform.SetParent(Egde_.transform);
                 }

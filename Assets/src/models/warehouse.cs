@@ -293,10 +293,18 @@ public class warehouse : MonoBehaviour
                     GameObject InstanceShelf = Instantiate(InstanceML, new Vector3(this.LocationX + offset_l, 1f + hight_number * MLheigth, this.LocationY + offset_w), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
                     InstanceShelf.name = $"Shelf{shelf_index}";
                     InstanceShelf.transform.SetParent(instantiatedObject.transform);
+                    Shelf Shelf_component = InstanceShelf.GetComponent<Shelf>();
+                    Debug.Log($" {this.Grid_rotation}");
 
-
-                    this.Shelf_List.Add($"Shelf{shelf_index}",
-                        new Shelf(InstanceShelf, $"Shelf{shelf_index}"));
+                    if (new_rotation == 0f) 
+                    {
+                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", this.Grid_rotation);
+                    }
+                    else
+                    {
+                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", -this.Grid_rotation);
+                    }
+                    this.Shelf_List.Add($"Shelf{shelf_index}",Shelf_component);
 
                     if (offset_w > max_offset_w) { max_offset_w = offset_w; }
 
@@ -368,7 +376,7 @@ public class warehouse : MonoBehaviour
         //Debug.Log(str);
         this.warehouse_id = ID;
 
-        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 0, this.LocationY + 8.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
+        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 1.5f, this.LocationY + 16.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
         cube.transform.SetParent(instantiatedObject.transform);
         Robot robot = cube.GetComponent<Robot>();
         robot.robot_prefab = cube;

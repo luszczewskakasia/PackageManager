@@ -1,4 +1,5 @@
-
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -11,7 +12,11 @@ public class Robot : MonoBehaviour
     public int LocationX;
     public int LocationY;
     public Vector3 start_pos;
-    
+    public int put_pack_on_shelf_step = 0;
+    public int go_back_step = 0;
+    public List<Vector3> put_pack_commands;
+    public List<Vector3> go_back_commands;
+
 
     private void Start()
     {
@@ -19,23 +24,116 @@ public class Robot : MonoBehaviour
 
     private void Update()
     {
-        if (warehouse_id != null)
+        if (trigger)
         {
-            float X = LocationX * 13.05f;
-            float Y = LocationY * 13.05f;
-            Vector3 finalPosition = new Vector3(0, 0, 0 + 30);
-            if (trigger)
+            Vector3 final_vector = this.put_pack_commands[put_pack_on_shelf_step];
+
+            if (put_pack_on_shelf_step == 0 || put_pack_on_shelf_step == 2 || put_pack_on_shelf_step == 4)
             {
-                transform.position = Vector3.Lerp(transform.position, finalPosition, 1.0f * Time.deltaTime);
+                if (Math.Abs(robot_prefab.transform.rotation.eulerAngles.y - final_vector.y) > 3)
+                { transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.Euler(final_vector), 1.0f * Time.deltaTime); }
+                else 
+                { 
+                    transform.rotation = Quaternion.Euler(final_vector);
+                    if (put_pack_on_shelf_step < put_pack_commands.Count - 1) 
+                    {
+                        put_pack_on_shelf_step += 1;
+                    }
+                }
+
+
             }
-            else
+            if (put_pack_on_shelf_step == 1 || put_pack_on_shelf_step == 3 || put_pack_on_shelf_step == 5)
             {
-                transform.position = Vector3.Lerp(transform.position, start_pos, 0.1f * Time.deltaTime);
+
+                Debug.Log($"Finalna pozycja {final_vector}");
+                Debug.Log($"Pozycja Robota {robot_prefab.transform.position}");
+                Debug.Log($"Ró¿nica {robot_prefab.transform.position.x - final_vector.x}, {robot_prefab.transform.position.z - final_vector.z} ");
+
+                if ((Math.Abs(final_vector.x - robot_prefab.transform.position.x) > 0.4f) || (Math.Abs(final_vector.z - robot_prefab.transform.position.z) > 0.4f))
+                {
+                    robot_prefab.transform.position = Vector3.Lerp(robot_prefab.transform.position, final_vector, 1f * Time.deltaTime);
+                }
+                else
+                {
+                    robot_prefab.transform.position = final_vector;
+                    if (put_pack_on_shelf_step < put_pack_commands.Count - 1)
+                    {
+                        put_pack_on_shelf_step += 1;
+                    }
+                }
             }
         }
+        else
+        {
+            transform.position = Vector3.Lerp(transform.position, start_pos, 1f * Time.deltaTime);
+        }
+
+
+    }
+    public void set_move_steps(Vector3 shelf_pos,int shelf_rotation) 
+    {
+        put_pack_commands = new List<Vector3>();
+        go_back_commands = new List<Vector3>();
+        float X = shelf_pos.x;
+        float Y = shelf_pos.z;
+        float Height = shelf_pos.y;    
+        switch (shelf_rotation) 
+        {
+            case -1: //od dolu
+                put_pack_commands.Add(new Vector3(0,180f,0 ));
+                put_pack_commands.Add(new Vector3(this.start_pos.x, 0, Y - 5f));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X, 0, Y - 5f));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X, 0, Y - 1f));
+                break;
+            case 1:
+                put_pack_commands.Add(new Vector3(0, 180f, 0));
+                put_pack_commands.Add(new Vector3(this.start_pos.x, 0, Y + 5f));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X, 0, Y + 5f));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X, 0, Y + 1f));
+                break;
+            case -2: //od lewej
+                put_pack_commands.Add(new Vector3(0, 180f, 0));
+                put_pack_commands.Add(new Vector3(X + 5f, 0, this.start_pos.y));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X + 5f, 0, Y));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X - 1f, 0, Y));
+                break;
+             case 2:
+                put_pack_commands.Add(new Vector3(0, 180f, 0));
+                put_pack_commands.Add(new Vector3(X + 5f, 0, this.start_pos.y));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X - 5f, 0, Y));
+                put_pack_commands.Add(new Vector3(0, 90f, 0));
+                put_pack_commands.Add(new Vector3(X + 1f, 0, Y));
+                break;
+
+
+        }
+        
+        
+
+
+
+
+    
+    }
+    public bool Is_robot_trigger() 
+    { 
+        return trigger;
     }
     public void set_start_pos (Vector3 pos)
     {
         this.start_pos = pos;
     }
+
+
+
+
+
 }
