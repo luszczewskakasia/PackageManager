@@ -362,11 +362,11 @@ public class SortLine : MonoBehaviour
                 Old_Connections = Edges[i];
                 Old_Target = Edges[i].target;
                 Old_Edge_index = i;
+
                 break;
             }
         }
         string str = "";
-
 
         if (Old_Edge_index != null)
         {
@@ -716,6 +716,8 @@ public class SortLine : MonoBehaviour
             StopNode.from_ = NewMidPoint_Index;
             this.Node_vertices[StopNodeIndex - 1] = StopNode;
             Add_edge_without_mesh(NewMidPoint_Index, StopNodeIndex);
+            Add_edge_without_mesh(StartNodeIndex,NewMidPoint_Index);
+
         }
         return NewMidPoint;
 

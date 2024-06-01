@@ -66,7 +66,6 @@ public class Shelf
 
     public int GetEmptySlots()
     {
-        // Assuming each slot can hold one package, this can be adjusted as needed
         int usedSlots = packagesBySize.Values.Sum(p => p.Count);
         return totalCapacity - usedSlots;
     }

@@ -43,6 +43,7 @@ public class warehouse : MonoBehaviour
     public int shelves_number;
 
     public Robot robot;
+    private int warehouse_id;
 
 
     public warehouse(string Destination, int X, int Y, int rotation, int BigPackagesSlots, int MediumPackagesSlots, int SmallPachagesSlots)
@@ -86,7 +87,7 @@ public class warehouse : MonoBehaviour
     }
 
     //dodaj paczkê nadaj ID
-    public void New_packege(int size, Package new_packge)
+    public void New_packege(int size, queue_struct new_packge)
     {
         if (!PackegesOverload[size])
         {
@@ -94,25 +95,28 @@ public class warehouse : MonoBehaviour
             if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
         }
 
-        foreach (var shelfEntry in this.Shelf_List)
-        {
-            string shelfKey = shelfEntry.Key;
-            Cap shelfValue = shelfEntry.Value;
+        //foreach (var shelfEntry in this.Shelf_List)
+        //{
+        //    string shelfKey = shelfEntry.Key;
+        //    Shelf shelfValue = shelfEntry.Value;
 
-            int emptySlots = shelfValue.GetEmptySlots(size);
-            if (emptySlots > 0)
-            {
-                shelfValue.AddPackage(size, new_packge);
-                Debug.Log($"Package added to shelf: {shelfKey}");
+        //    int emptySlots = shelfValue.GetEmptySlots();
+        //    if (emptySlots > 0)
+        //    {
+        //        Package newPackage = new Package(queue_struct);
 
-                int bigPackagesCount = shelfValue.GetPackageCount(0);
-                int mediumPackagesCount = shelfValue.GetPackageCount(1);
-                int smallPackagesCount = shelfValue.GetPackageCount(2);
+        //        shelfValue.AddPackage(newPackage);
+        //        Debug.Log($"Package added to shelf: {shelfKey}");
 
-                Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
-                break;
-            }
-        }
+        //        int bigPackagesCount = shelfValue.GetPackageCount(0);
+        //        int mediumPackagesCount = shelfValue.GetPackageCount(1);
+        //        int smallPackagesCount = shelfValue.GetPackageCount(2);
+
+        //        Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
+        //        break;
+        //    }
+        //    this.storageList.Add(new_packge.ID, 1);
+        //}
     }
 
     public warehouse get()
@@ -354,11 +358,15 @@ public class warehouse : MonoBehaviour
         //}
         //str += " ]";
         //Debug.Log(str);
+        this.warehouse_id = ID;
 
         GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 0, this.LocationY + 8.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
         cube.transform.SetParent(instantiatedObject.transform);
         Robot robot = cube.GetComponent<Robot>();
         robot.robot_prefab = cube;
+        robot.warehouse_id = ID;
+        robot.LocationX = this.Grid_X;
+        robot.LocationY = this.Grid_Y;
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 
