@@ -370,6 +370,7 @@ public class warehouse : MonoBehaviour
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 
+        robot.set_start_pos(robot.transform.position);
 
         return 0;
 

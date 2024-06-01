@@ -10,6 +10,7 @@ public class Robot : MonoBehaviour
     public bool trigger;
     public int LocationX;
     public int LocationY;
+    public Vector3 start_pos;
     
 
     private void Start()
@@ -22,16 +23,19 @@ public class Robot : MonoBehaviour
         {
             float X = LocationX * 13.05f;
             float Y = LocationY * 13.05f;
-            robot_prefab.transform.position = new Vector3(X, 0, Y);
             Vector3 finalPosition = new Vector3(0, 0, 0 + 30);
             if (trigger)
             {
-                transform.position = Vector3.Lerp(transform.position, finalPosition, 0.1f * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, finalPosition, 1.0f * Time.deltaTime);
             }
             else
             {
-                transform.position = Vector3.Lerp(transform.position, new Vector3(X, 0, Y), 0.1f * Time.deltaTime);
+                transform.position = Vector3.Lerp(transform.position, start_pos, 0.1f * Time.deltaTime);
             }
         }
+    }
+    public void set_start_pos (Vector3 pos)
+    {
+        this.start_pos = pos;
     }
 }
