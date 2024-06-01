@@ -1,4 +1,5 @@
 
+using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
@@ -11,7 +12,11 @@ public class Robot : MonoBehaviour
     public int LocationX;
     public int LocationY;
     public Vector3 start_pos;
-    
+    public int put_pack_on_shelf_step = 0;
+    public int go_back_step = 0;
+    public List<Vector3> put_pack_commands;
+    public List<Vector3> go_back_commands;
+
 
     private void Start()
     {
@@ -19,7 +24,7 @@ public class Robot : MonoBehaviour
 
     private void Update()
     {
-        if (warehouse_id != null)
+        if (trigger)
         {
             float X = LocationX * 13.05f;
             float Y = LocationY * 13.05f;
@@ -34,8 +39,27 @@ public class Robot : MonoBehaviour
             }
         }
     }
+    public void set_move_steps(Vector3 shelf_pos,int shelf_rotation) 
+    {   
+
+        
+
+
+
+
+    
+    }
+    public bool Is_robot_trigger() 
+    { 
+        return trigger;
+    }
     public void set_start_pos (Vector3 pos)
     {
         this.start_pos = pos;
     }
+
+
+
+
+
 }

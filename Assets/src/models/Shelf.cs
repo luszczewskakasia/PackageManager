@@ -6,7 +6,7 @@ using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [System.Serializable]
-public class Shelf 
+public class Shelf: MonoBehaviour
 {
     public GameObject Mesh_;
     public string Shelf_ID;
@@ -17,9 +17,14 @@ public class Shelf
     public int next_small_Empty;
     public int next_small_Medium;
     public int next_small_Big;
+    public int rotation;
 
+    public void Start()
+    {}
+    public void Update()
+    { }
 
-    public Shelf(GameObject mesh, string name)
+    public void Initialize(GameObject mesh, string name,int rotation)
     { 
         this.Mesh_ = mesh;
         this.Shelf_ID = name;
@@ -30,7 +35,7 @@ public class Shelf
         this.next_small_Empty = 0;
         this.next_small_Medium = 0;
         this.next_small_Big = 0;
-
+        this.rotation = rotation;
     }
 
     private int totalCapacity;
