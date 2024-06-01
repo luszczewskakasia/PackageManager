@@ -36,12 +36,14 @@ public class Shelf: MonoBehaviour
         this.next_small_Medium = 0;
         this.next_small_Big = 0;
         this.rotation = rotation;
+        Cap(9.0f);
+
     }
 
-    private int totalCapacity;
+    public float totalCapacity;
     private Dictionary<int, List<Package>> packagesBySize;
 
-    public void Cap(int capacity)
+    public void Cap(float capacity)
     {
         totalCapacity = capacity;
         packagesBySize = new Dictionary<int, List<Package>>()
@@ -52,27 +54,69 @@ public class Shelf: MonoBehaviour
         };
     }
 
-    public void AddPackage(int size, Package package)
-    {
-        if (packagesBySize.ContainsKey(size))
-        {
-            packagesBySize[size].Add(package);
-        }
-    }
+    //public void AddPackage(int size, Package package)
+    //{
+    //    if (packagesBySize.ContainsKey(size))
+    //    {
+    //        packagesBySize[size].Add(package);
+    //    }
+    //}
 
-    public int GetPackageCount(int size)
-    {
-        if (packagesBySize.ContainsKey(size))
-        {
-            return packagesBySize[size].Count;
-        }
-        return 0;
-    }
+    //public int GetPackageCount(int size)
+    //{
+    //    if (packagesBySize.ContainsKey(size))
+    //    {
+    //        return packagesBySize[size].Count;
+    //    }
+    //    return 0;
+    //}
 
-    public int GetEmptySlots()
+    public float GetEmptySlots()
     {
-        int usedSlots = packagesBySize.Values.Sum(p => p.Count);
+        float usedSlots = 0.0f;
+
+        foreach (var keyValuePair in packagesBySize)
+        {
+            int size = keyValuePair.Key;
+            int number_of_packages = keyValuePair.Value.Count;
+
+            switch (size)
+            {
+                case 0:
+                    usedSlots += number_of_packages * 1.0f;
+                    break;
+                case 1:
+                    usedSlots += number_of_packages * 1.5f;
+                    break;
+                case 2:
+                    usedSlots += number_of_packages * 3.0f;
+                    break;
+            }
+        }
         return totalCapacity - usedSlots;
     }
 
+    public Vector3 GetPosition()
+    {
+        if (Mesh_ != null)
+        {
+            if (totalCapacity >= 0.0f && totalCapacity <= 3.0f) 
+            {
+                Vector3 offset = new Vector3(1.0f, 0.0f, 1.0f);
+                return Mesh_.transform.position - offset; 
+            }
+  
+            else if (totalCapacity > 3.0f && totalCapacity <= 6.0f)
+            {
+                return Mesh_.transform.position;
+            }
+
+            else
+            {
+                Vector3 offset = new Vector3(1.0f, 0.0f, 1.0f);
+                return Mesh_.transform.position + offset; 
+            }
+        }
+        else { return Vector3.zero; }
+    }
 }

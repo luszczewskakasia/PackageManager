@@ -98,7 +98,7 @@ public class Simulation : MonoBehaviour
 
     private void Start()
     {
-
+        this.last_pack_id = 0;
         this.Warehouses = new Dictionary<int, warehouse>();
         this.warehouseFileds = new List<WarehouseFiled>();
 
@@ -168,6 +168,7 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                     case 1:
                         New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
@@ -175,7 +176,7 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
-
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                     case 2:
                         New_Package_mesh = Instantiate(Big_Package_Mesh_object,
@@ -183,10 +184,12 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
-
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                 }
                 Objects_to_spawn.RemoveAt(0);
+
+
             }
             this.spawn_delay = 0;
         }
@@ -278,6 +281,7 @@ public class Simulation : MonoBehaviour
                         Final_warehouse_id = j;
                         Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
                         last_pack_id++;
+                        Debug.Log($"{Pack_id}");
                         break;
                     }
                 }
@@ -289,26 +293,23 @@ public class Simulation : MonoBehaviour
                         case 0:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                         case 1:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                         case 2:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                     }
-
                 }
             }
         }
+        Debug.Log($"{New_Packeges_Count}");
     }
 
     public void robot_instance ()

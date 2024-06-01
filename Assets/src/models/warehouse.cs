@@ -75,48 +75,57 @@ public class warehouse : MonoBehaviour
 
 
     //odbiór paczek z pomieszczenia
-    private void Shipping(List<string> shippingList)
-    {
-        foreach (string packageID in shippingList)
-        {
-            int size = storageList[packageID];
-            this.Empty_slots[size]++;
-            if (PackegesOverload[size]) { PackegesOverload[size] = false; }
-            storageList.Remove(packageID);
-        }
-    }
+    //private void Shipping(List<string> shippingList)
+    //{
+    //    foreach (string packageID in shippingList)
+    //    {
+    //        int size = storageList[packageID];
+    //        this.Empty_slots[size]++;
+    //        if (PackegesOverload[size]) { PackegesOverload[size] = false; }
+    //        storageList.Remove(packageID);
+    //    }
+    //}
 
     //dodaj paczkê nadaj ID
-    public void New_packege(int size, queue_struct new_packge)
+
+    public void New_package(Package new_package)
     {
-        if (!PackegesOverload[size])
+        if (!PackegesOverload[new_package.size])
         {
-            Empty_slots[size]--;
-            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+            Empty_slots[new_package.size]--;
+            if (Empty_slots[new_package.size] == 0) { PackegesOverload[new_package.size] = true; }
         }
 
-        //foreach (var shelfEntry in this.Shelf_List)
-        //{
-        //    string shelfKey = shelfEntry.Key;
-        //    Shelf shelfValue = shelfEntry.Value;
+        foreach (var shelfEntry in this.Shelf_List)
+        {
+            Shelf shelfValue = shelfEntry.Value;
 
-        //    int emptySlots = shelfValue.GetEmptySlots();
-        //    if (emptySlots > 0)
-        //    {
-        //        Package newPackage = new Package(queue_struct);
+            float emptySlots = shelfValue.GetEmptySlots();
+            if (emptySlots > 0.0f)
+            {
+                Vector3 shelfPosition = shelfValue.GetPosition();
+                //Package newPackage = new Package; //??
 
-        //        shelfValue.AddPackage(newPackage);
-        //        Debug.Log($"Package added to shelf: {shelfKey}");
+                //shelfValue.AddPackage(newPackage);
+                //Debug.Log($"Package added to shelf: {shelfKey}");
 
-        //        int bigPackagesCount = shelfValue.GetPackageCount(0);
-        //        int mediumPackagesCount = shelfValue.GetPackageCount(1);
-        //        int smallPackagesCount = shelfValue.GetPackageCount(2);
+                //int bigPackagesCount = shelfValue.GetPackageCount(0);
+                //int mediumPackagesCount = shelfValue.GetPackageCount(1);
+                //int smallPackagesCount = shelfValue.GetPackageCount(2);
 
-        //        Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
-        //        break;
-        //    }
-        //    this.storageList.Add(new_packge.ID, 1);
-        //}
+                //Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
+                //break;
+            }
+            if (!this.storageList.ContainsKey(new_package.ID))
+            {
+                this.storageList.Add(new_package.ID, 1);
+                foreach (var key in this.storageList.Keys)
+                {
+                    Debug.Log($"ID in storageList: {key}");
+                }
+     
+            }
+        }
     }
 
     public warehouse get()
@@ -368,13 +377,15 @@ public class warehouse : MonoBehaviour
         //Debug.Log(str);
         this.warehouse_id = ID;
 
-        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 1.5f, this.LocationY + 16.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
+        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 1.45f, this.LocationY + 13f), Quaternion.Euler(new Vector3(0, 0, 0)));
         cube.transform.SetParent(instantiatedObject.transform);
         Robot robot = cube.GetComponent<Robot>();
         robot.robot_prefab = cube;
         robot.warehouse_id = ID;
         robot.LocationX = this.Grid_X;
         robot.LocationY = this.Grid_Y;
+
+        this.robot = robot;
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
 

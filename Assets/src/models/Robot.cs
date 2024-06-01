@@ -8,6 +8,7 @@ public class Robot : MonoBehaviour
     public GameObject robot_prefab;
     public int warehouse_id;
     public string warehouse_name;
+    public int warehouse_rotation;
     public bool trigger;
     public int LocationX;
     public int LocationY;
@@ -18,6 +19,7 @@ public class Robot : MonoBehaviour
     public List<Vector3> go_back_commands;
     public float put_time;
     public bool animations;
+    public Package transported_packege;
 
 
     private void Start()
@@ -59,6 +61,7 @@ public class Robot : MonoBehaviour
                     if (put_pack_on_shelf_step < put_pack_commands.Count - 1)
                     {
                         put_pack_on_shelf_step += 1;
+
                     }
                 }
 
@@ -133,6 +136,21 @@ public class Robot : MonoBehaviour
 
     
     }
+
+
+    public void Take_pack(Package pack_) 
+    {
+        GameObject pack = pack_.Package_Mesh;
+        this.transported_packege = pack_;
+        Vector3 robot_middle = this.robot_prefab.transform.position ;
+        Vector3 Range_to_platform = new Vector3(2,2,0);
+        pack.transform.position = robot_middle + Range_to_platform;
+        pack.transform.SetParent(robot_prefab.transform);
+
+    }
+
+
+
     public bool Is_robot_trigger() 
     { 
         return trigger;
