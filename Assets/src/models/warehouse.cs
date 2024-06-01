@@ -115,7 +115,15 @@ public class warehouse : MonoBehaviour
                 //Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
                 //break;
             }
-            this.storageList.Add(new_package.ID, 1);
+            if (!this.storageList.ContainsKey(new_package.ID))
+            {
+                this.storageList.Add(new_package.ID, 1);
+                foreach (var key in this.storageList.Keys)
+                {
+                    Debug.Log($"ID in storageList: {key}");
+                }
+     
+            }
         }
     }
 

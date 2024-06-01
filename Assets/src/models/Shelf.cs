@@ -35,17 +35,8 @@ public class Shelf
 
     }
 
-    private float totalCapacity;
+    public float totalCapacity;
     private Dictionary<int, List<Package>> packagesBySize;
-
-    public Vector3 GetPosition()
-    {
-        if(Mesh_ != null)
-        {
-            return Mesh_.transform.position;
-        }
-        else { return Vector3.zero; }
-    }
 
     public void Cap(float capacity)
     {
@@ -58,22 +49,22 @@ public class Shelf
         };
     }
 
-    public void AddPackage(int size, Package package)
-    {
-        if (packagesBySize.ContainsKey(size))
-        {
-            packagesBySize[size].Add(package);
-        }
-    }
+    //public void AddPackage(int size, Package package)
+    //{
+    //    if (packagesBySize.ContainsKey(size))
+    //    {
+    //        packagesBySize[size].Add(package);
+    //    }
+    //}
 
-    public int GetPackageCount(int size)
-    {
-        if (packagesBySize.ContainsKey(size))
-        {
-            return packagesBySize[size].Count;
-        }
-        return 0;
-    }
+    //public int GetPackageCount(int size)
+    //{
+    //    if (packagesBySize.ContainsKey(size))
+    //    {
+    //        return packagesBySize[size].Count;
+    //    }
+    //    return 0;
+    //}
 
     public float GetEmptySlots()
     {
@@ -98,5 +89,29 @@ public class Shelf
             }
         }
         return totalCapacity - usedSlots;
+    }
+
+    public Vector3 GetPosition()
+    {
+        if (Mesh_ != null)
+        {
+            if (totalCapacity >= 0.0f && totalCapacity <= 3.0f) 
+            {
+                Vector3 offset = new Vector3(1.0f, 0.0f, 1.0f);
+                return Mesh_.transform.position - offset; 
+            }
+  
+            else if (totalCapacity > 3.0f && totalCapacity <= 6.0f)
+            {
+                return Mesh_.transform.position;
+            }
+
+            else
+            {
+                Vector3 offset = new Vector3(1.0f, 0.0f, 1.0f);
+                return Mesh_.transform.position + offset; 
+            }
+        }
+        else { return Vector3.zero; }
     }
 }

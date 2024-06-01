@@ -98,7 +98,7 @@ public class Simulation : MonoBehaviour
 
     private void Start()
     {
-
+        this.last_pack_id = 0;
         this.Warehouses = new Dictionary<int, warehouse>();
         this.warehouseFileds = new List<WarehouseFiled>();
 
@@ -188,6 +188,7 @@ public class Simulation : MonoBehaviour
                         break;
                 }
                 Objects_to_spawn.RemoveAt(0);
+
 
             }
             this.spawn_delay = 0;
@@ -280,6 +281,7 @@ public class Simulation : MonoBehaviour
                         Final_warehouse_id = j;
                         Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
                         last_pack_id++;
+                        Debug.Log($"{Pack_id}");
                         break;
                     }
                 }
@@ -304,10 +306,10 @@ public class Simulation : MonoBehaviour
                             Objects_to_spawn.Add(New_Package);
                             break;
                     }
-
                 }
             }
         }
+        Debug.Log($"{New_Packeges_Count}");
     }
 
     public void robot_instance ()
