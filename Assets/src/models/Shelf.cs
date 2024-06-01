@@ -31,12 +31,23 @@ public class Shelf
         this.next_small_Medium = 0;
         this.next_small_Big = 0;
 
+        Cap(9.0f);
+
     }
 
-    private int totalCapacity;
+    private float totalCapacity;
     private Dictionary<int, List<Package>> packagesBySize;
 
-    public void Cap(int capacity)
+    public Vector3 GetPosition()
+    {
+        if(Mesh_ != null)
+        {
+            return Mesh_.transform.position;
+        }
+        else { return Vector3.zero; }
+    }
+
+    public void Cap(float capacity)
     {
         totalCapacity = capacity;
         packagesBySize = new Dictionary<int, List<Package>>()
@@ -64,10 +75,28 @@ public class Shelf
         return 0;
     }
 
-    public int GetEmptySlots()
+    public float GetEmptySlots()
     {
-        int usedSlots = packagesBySize.Values.Sum(p => p.Count);
+        float usedSlots = 0.0f;
+
+        foreach (var keyValuePair in packagesBySize)
+        {
+            int size = keyValuePair.Key;
+            int number_of_packages = keyValuePair.Value.Count;
+
+            switch (size)
+            {
+                case 0:
+                    usedSlots += number_of_packages * 1.0f;
+                    break;
+                case 1:
+                    usedSlots += number_of_packages * 1.5f;
+                    break;
+                case 2:
+                    usedSlots += number_of_packages * 3.0f;
+                    break;
+            }
+        }
         return totalCapacity - usedSlots;
     }
-
 }

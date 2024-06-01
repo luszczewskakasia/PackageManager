@@ -75,48 +75,48 @@ public class warehouse : MonoBehaviour
 
 
     //odbiór paczek z pomieszczenia
-    private void Shipping(List<string> shippingList)
-    {
-        foreach (string packageID in shippingList)
-        {
-            int size = storageList[packageID];
-            this.Empty_slots[size]++;
-            if (PackegesOverload[size]) { PackegesOverload[size] = false; }
-            storageList.Remove(packageID);
-        }
-    }
+    //private void Shipping(List<string> shippingList)
+    //{
+    //    foreach (string packageID in shippingList)
+    //    {
+    //        int size = storageList[packageID];
+    //        this.Empty_slots[size]++;
+    //        if (PackegesOverload[size]) { PackegesOverload[size] = false; }
+    //        storageList.Remove(packageID);
+    //    }
+    //}
 
     //dodaj paczkê nadaj ID
-    public void New_packege(int size, queue_struct new_packge)
+    public void New_package(Package new_package)
     {
-        if (!PackegesOverload[size])
+        if (!PackegesOverload[new_package.size])
         {
-            Empty_slots[size]--;
-            if (Empty_slots[size] == 0) { PackegesOverload[size] = true; }
+            Empty_slots[new_package.size]--;
+            if (Empty_slots[new_package.size] == 0) { PackegesOverload[new_package.size] = true; }
         }
 
-        //foreach (var shelfEntry in this.Shelf_List)
-        //{
-        //    string shelfKey = shelfEntry.Key;
-        //    Shelf shelfValue = shelfEntry.Value;
+        foreach (var shelfEntry in this.Shelf_List)
+        {
+            Shelf shelfValue = shelfEntry.Value;
 
-        //    int emptySlots = shelfValue.GetEmptySlots();
-        //    if (emptySlots > 0)
-        //    {
-        //        Package newPackage = new Package(queue_struct);
+            float emptySlots = shelfValue.GetEmptySlots();
+            if (emptySlots > 0.0f)
+            {
+                Vector3 shelfPosition = shelfValue.GetPosition();
+                //Package newPackage = new Package; //??
 
-        //        shelfValue.AddPackage(newPackage);
-        //        Debug.Log($"Package added to shelf: {shelfKey}");
+                //shelfValue.AddPackage(newPackage);
+                //Debug.Log($"Package added to shelf: {shelfKey}");
 
-        //        int bigPackagesCount = shelfValue.GetPackageCount(0);
-        //        int mediumPackagesCount = shelfValue.GetPackageCount(1);
-        //        int smallPackagesCount = shelfValue.GetPackageCount(2);
+                //int bigPackagesCount = shelfValue.GetPackageCount(0);
+                //int mediumPackagesCount = shelfValue.GetPackageCount(1);
+                //int smallPackagesCount = shelfValue.GetPackageCount(2);
 
-        //        Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
-        //        break;
-        //    }
-        //    this.storageList.Add(new_packge.ID, 1);
-        //}
+                //Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
+                //break;
+            }
+            this.storageList.Add(new_package.ID, 1);
+        }
     }
 
     public warehouse get()

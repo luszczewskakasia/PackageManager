@@ -168,6 +168,7 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                     case 1:
                         New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
@@ -175,7 +176,7 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
-
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                     case 2:
                         New_Package_mesh = Instantiate(Big_Package_Mesh_object,
@@ -183,10 +184,11 @@ public class Simulation : MonoBehaviour
                         package = New_Package_mesh.GetComponent<Package>();
                         package.Initialize(First_in_queue);
                         package.Add_Mesh_to_Package(New_Package_mesh);
-
+                        this.Warehouses[package.warehouseID].New_package(package);
                         break;
                 }
                 Objects_to_spawn.RemoveAt(0);
+
             }
             this.spawn_delay = 0;
         }
@@ -289,19 +291,16 @@ public class Simulation : MonoBehaviour
                         case 0:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                         case 1:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                         case 2:
                             New_Package = new queue_struct(size_list[i], Pack_id, (int)Final_warehouse_id,
                             this.Warehouses[(int)Final_warehouse_id].path);
-                            Warehouses[(int)Final_warehouse_id].New_packege(size_list[i], New_Package);
                             Objects_to_spawn.Add(New_Package);
                             break;
                     }

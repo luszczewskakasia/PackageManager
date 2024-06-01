@@ -28,9 +28,6 @@ public struct queue_struct {
 };
 
 
-
-
-
 public class Package:MonoBehaviour
 {
     public int size;
