@@ -63,8 +63,6 @@ public class Robot : MonoBehaviour
                     }
                 }
             }
-
-
         }
         else
         {

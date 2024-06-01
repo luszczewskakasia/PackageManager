@@ -368,7 +368,7 @@ public class warehouse : MonoBehaviour
         //Debug.Log(str);
         this.warehouse_id = ID;
 
-        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 0, this.LocationY + 8.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
+        GameObject cube = Instantiate(robot_prefab, new Vector3(this.LocationX, 1.5f, this.LocationY + 16.0f), Quaternion.Euler(new Vector3(0, 0, 0)));
         cube.transform.SetParent(instantiatedObject.transform);
         Robot robot = cube.GetComponent<Robot>();
         robot.robot_prefab = cube;

@@ -41,6 +41,7 @@ public class Package:MonoBehaviour
     public bool Destination_achived;
     public int current_location;
     public Rigidbody RiggedBody;
+    public float tolerance;
     public void Initialize(queue_struct init_data)
     {
         this.size = init_data.size;
@@ -50,6 +51,16 @@ public class Package:MonoBehaviour
         this.Destination_achived = false;
         this.current_location = 0;
         foreach (Node nd in road) { Debug.Log($" {nd.Input_dir} ,{nd.Index}"); }
+
+
+        switch(this.size) 
+        {
+            case 0 : this.tolerance = 1.55f; break;
+            case 1: this.tolerance = 2.05f; break;
+            case 2: this.tolerance = 3.0f; break;
+
+        }
+
 
     }
 
@@ -70,7 +81,7 @@ public class Package:MonoBehaviour
             float x_to_last = (float)(road[road.Count - 1].x * 13.05) - Pack_position.x;
             float y_to_last = (float)(road[road.Count - 1].y * 13.05) - Pack_position.z;
 
-            if ((int)(Pack_position.x / 13.05) == road[road.Count - 1].x && (int)((Pack_position.z - 13.05 / 2) / 13.05) == road[road.Count - 1].y || (Mathf.Abs(x_to_last) < 1.05 && Mathf.Abs(y_to_last) < 1.05))
+            if ((int)(Pack_position.x / 13.05) == road[road.Count - 1].x && (int)((Pack_position.z - 13.05 / 2) / 13.05) == road[road.Count - 1].y || (Mathf.Abs(x_to_last) < tolerance && Mathf.Abs(y_to_last) < tolerance))
             {
                 Destination_achived = true;
             }
@@ -89,7 +100,7 @@ public class Package:MonoBehaviour
                     dir = new Vector3(-1, 0, y_to_mid);
                     break;
             }
-            if ((int)(Pack_position.x / 13.05) == road[current_location + 1].x && (int)((Pack_position.z - 13.05 / 2) / 13.05) == road[current_location + 1].y || (Mathf.Abs(x_to_mid) < 1.05 && Mathf.Abs(y_to_mid) < 1.05))
+            if ((int)(Pack_position.x / 13.05) == road[current_location + 1].x && (int)((Pack_position.z - 13.05 / 2) / 13.05) == road[current_location + 1].y || (Mathf.Abs(x_to_mid) < tolerance && Mathf.Abs(y_to_mid) < tolerance))
             {
                 current_location += 1;
             }

@@ -138,7 +138,7 @@ public class Simulation : MonoBehaviour
         this.Line_start_y = 0;
         this.spawn_delay = 3;
         this.Objects_to_spawn = new List<queue_struct>();
-
+        this.last_pack_id = 0;
         //Dodawanie Paczek:
 
         List<int> sizes = new List<int> { 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 };
