@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
-using UnityEditor.Experimental.GraphView;
 using System.Threading;
 using System.Drawing;
 using Unity.VisualScripting;
@@ -58,8 +57,6 @@ public class WarehouseFiled
         {
             return true;
         }
-
-
         else { return false; }
     }
 };
@@ -92,15 +89,13 @@ public class Simulation : MonoBehaviour
     public float ML_L;
     [JsonIgnore]
     public float ML_H;
-    private List<WarehouseFiled> warehouseFileds;
+    public List<WarehouseFiled> warehouseFileds = new List<WarehouseFiled>();
     private List<queue_struct> Objects_to_spawn;
     public GameObject robot_prefab;
-
     private void Start()
     {
         this.last_pack_id = 0;
         this.Warehouses = new Dictionary<int, warehouse>();
-        this.warehouseFileds = new List<WarehouseFiled>();
 
         // start
         this.Add_warehouse(new warehouse("KRK", (-20), (0), -2, 50, 50, 50));
@@ -141,16 +136,14 @@ public class Simulation : MonoBehaviour
         this.last_pack_id = 0;
         //Dodawanie Paczek:
 
-        List<int> sizes = new List<int> { 0, 0, 2, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 };
-        List<string> Destinations = new List<string> { "KRK", "RZE", "LUB", "BIAL", "GORZ", "BYD", "GDA", "OLSZ", "KAT", "OPO", "WRC", "SZCZ", "POZ", "LOD", "WAR", "KIE", "TOR", "ZIEL", "ZAK", "CZES", "PRZEM", "KOSZ" };
+        List<int> sizes = new List<int> { 0,2, 0, 2, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 0 };
+        List<string> Destinations = new List<string> { "KRK", "KRK", "RZE", "LUB", "BIAL", "GORZ", "BYD", "GDA", "OLSZ", "KAT", "OPO", "WRC", "SZCZ", "POZ", "LOD", "WAR", "KIE", "TOR", "ZIEL", "ZAK", "CZES", "PRZEM", "KOSZ" };
         //Add_package_instance(sizes, Destinations);
         //List<int> sizes = new List<int> { 0 };
         //List<string> Destinations = new List<string> { "BYD" };
         Add_package_instance(sizes, Destinations);
-
         this.sort_method = "Destination";
     }
-
     void Update()
     {
         if (this.spawn_delay > 3)
@@ -160,43 +153,47 @@ public class Simulation : MonoBehaviour
                 queue_struct First_in_queue = this.Objects_to_spawn[0];
                 GameObject New_Package_mesh;
                 Package package;
-                switch (First_in_queue.size)
+                if (this.Warehouses[First_in_queue.warehouseID].Packege_in_delivery)
                 {
-                    case 0:
-                        New_Package_mesh = Instantiate(Small_Package_Mesh_object,
-                            new Vector3(Line_start_x, 3.5f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        package = New_Package_mesh.GetComponent<Package>();
-                        package.Initialize(First_in_queue);
-                        package.Add_Mesh_to_Package(New_Package_mesh);
-                        this.Warehouses[package.warehouseID].New_package(package);
-                        break;
-                    case 1:
-                        New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
-                            new Vector3(Line_start_x, 4f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        package = New_Package_mesh.GetComponent<Package>();
-                        package.Initialize(First_in_queue);
-                        package.Add_Mesh_to_Package(New_Package_mesh);
-                        this.Warehouses[package.warehouseID].New_package(package);
-                        break;
-                    case 2:
-                        New_Package_mesh = Instantiate(Big_Package_Mesh_object,
-                            new Vector3(Line_start_x, 4.5f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
-                        package = New_Package_mesh.GetComponent<Package>();
-                        package.Initialize(First_in_queue);
-                        package.Add_Mesh_to_Package(New_Package_mesh);
-                        this.Warehouses[package.warehouseID].New_package(package);
-                        break;
+                    Objects_to_spawn.Add(First_in_queue);
+
+                }
+                else 
+                {
+                    switch (First_in_queue.size)
+                    {
+                        case 0:
+                            New_Package_mesh = Instantiate(Small_Package_Mesh_object,
+                                new Vector3(Line_start_x, 3.5f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                            package = New_Package_mesh.GetComponent<Package>();
+                            package.Initialize(First_in_queue);
+                            package.Add_Mesh_to_Package(New_Package_mesh);
+                            this.Warehouses[package.warehouseID].New_package(package);
+                            break;
+                        case 1:
+                            New_Package_mesh = Instantiate(Medium_Package_Mesh_object,
+                                new Vector3(Line_start_x, 4f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                            package = New_Package_mesh.GetComponent<Package>();
+                            package.Initialize(First_in_queue);
+                            package.Add_Mesh_to_Package(New_Package_mesh);
+                            this.Warehouses[package.warehouseID].New_package(package);
+                            break;
+                        case 2:
+                            New_Package_mesh = Instantiate(Big_Package_Mesh_object,
+                                new Vector3(Line_start_x, 4.1f, Line_start_y), Quaternion.Euler(new Vector3(0, 0, 0)));
+                            package = New_Package_mesh.GetComponent<Package>();
+                            package.Initialize(First_in_queue);
+                            package.Add_Mesh_to_Package(New_Package_mesh);
+                            this.Warehouses[package.warehouseID].New_package(package);
+                            break;
+                    }
                 }
                 Objects_to_spawn.RemoveAt(0);
-
-
             }
             this.spawn_delay = 0;
         }
         this.spawn_delay += Time.deltaTime;
     }
-
-
     public Dictionary<int, warehouse> GetList() { return Warehouses; }
     public void SetList(Dictionary<int, warehouse> data) { Warehouses = data; }
     public void set_start(int x, int y)
@@ -281,7 +278,6 @@ public class Simulation : MonoBehaviour
                         Final_warehouse_id = j;
                         Pack_id += $"{destination_list[i]}_{last_pack_id}_{j}";
                         last_pack_id++;
-                        Debug.Log($"{Pack_id}");
                         break;
                     }
                 }
@@ -311,27 +307,8 @@ public class Simulation : MonoBehaviour
         }
         Debug.Log($"{New_Packeges_Count}");
     }
-
     public void robot_instance ()
     {
 
     }
-
-
 }
-//public string Destination;
-//public int BigPackagesSlots;
-//public int MediumPackagesSlots;
-//public int SmallPackagesSlots;
-
-////dane operacyjne
-//private List<int> Empty_slots;
-//private List<bool> PackegesOverload;
-//private Dictionary<string, int> storageList;
-//[JsonIgnore]
-//public GameObject instantiatedObject;
-
-////dane z linii produkcyjnej
-//public float LocationX;
-//public float LocationY;
-//public float rotation;

@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Newtonsoft.Json;
 using System;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine.InputSystem;
+using System.Xml.Linq;
 
 [System.Serializable]
 
@@ -20,7 +20,7 @@ public class warehouse : MonoBehaviour
     //dane operacyjne
     public List<int> Empty_slots;
     public List<bool> PackegesOverload;
-    private Dictionary<string, int> storageList;
+    private Dictionary<string, Shelf> storageList;
     [JsonIgnore]
     public GameObject instantiatedObject;
 
@@ -39,7 +39,7 @@ public class warehouse : MonoBehaviour
     public int maxY;
     public int minX;
     public int minY;
-
+    public bool Packege_in_delivery = false;
     public int shelves_number;
 
     public Robot robot;
@@ -54,7 +54,7 @@ public class warehouse : MonoBehaviour
         this.SmallPackagesSlots = SmallPachagesSlots;
         this.Empty_slots = new List<int> { BigPackagesSlots, MediumPackagesSlots, SmallPachagesSlots };
         this.PackegesOverload = new List<bool> { false, false, false };
-        this.storageList = new Dictionary<string, int>();
+        this.storageList = new Dictionary<string, Shelf>();
         this.Grid_X = X;
         this.Grid_Y = Y;
         this.Grid_rotation = rotation;
@@ -69,7 +69,7 @@ public class warehouse : MonoBehaviour
             case 1: this.rotation = 180f; break;
             case 2: this.rotation = -90; break;
         }
-        this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots) / 45);
+        this.shelves_number = (int)Math.Ceiling((BigPackagesSlots * 3 + Math.Ceiling(MediumPackagesSlots * 1.5) + SmallPachagesSlots) / 36);
 
     }
 
@@ -104,26 +104,14 @@ public class warehouse : MonoBehaviour
             if (emptySlots > 0.0f)
             {
                 Vector3 shelfPosition = shelfValue.GetPosition();
-                //Package newPackage = new Package; //??
+                new_package.Place_on_Shelf = shelfPosition;
+                new_package.shelf_name = shelfValue.name;
+                new_package.shelf_rot = shelfValue.rotation;
+                new_package.Mag_side = shelfValue.Mag_side;
 
-                //shelfValue.AddPackage(newPackage);
-                //Debug.Log($"Package added to shelf: {shelfKey}");
-
-                //int bigPackagesCount = shelfValue.GetPackageCount(0);
-                //int mediumPackagesCount = shelfValue.GetPackageCount(1);
-                //int smallPackagesCount = shelfValue.GetPackageCount(2);
-
-                //Debug.Log($"Shelf Key: {shelfKey}, Big Packages: {bigPackagesCount}, Medium Packages: {mediumPackagesCount}, Small Packages: {smallPackagesCount}");
-                //break;
-            }
-            if (!this.storageList.ContainsKey(new_package.ID))
-            {
-                this.storageList.Add(new_package.ID, 1);
-                foreach (var key in this.storageList.Keys)
-                {
-                    Debug.Log($"ID in storageList: {key}");
-                }
-     
+                this.storageList.Add(new_package.ID, shelfValue);
+                this.Packege_in_delivery = true;
+                break;
             }
         }
     }
@@ -287,23 +275,23 @@ public class warehouse : MonoBehaviour
 
                 }
 
-                for (int hight_number = 0; hight_number < 5; hight_number++)
+                for (int hight_number = 0; hight_number < 4; hight_number++)
                 {
-                    int shelf_index = (l_index * width_ * 5) + (w_index * 5) + hight_number;
+                    int shelf_index = (l_index * width_ * 4) + (w_index * 4) + hight_number;
 
-                    GameObject InstanceShelf = Instantiate(InstanceML, new Vector3(this.LocationX + offset_l, 1f + hight_number * MLheigth, this.LocationY + offset_w), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
+                    GameObject InstanceShelf = Instantiate(InstanceML, new Vector3(this.LocationX + offset_l, 2f + hight_number * MLheigth, this.LocationY + offset_w), Quaternion.Euler(new Vector3(-90f, new_rotation, 0)));
                     InstanceShelf.name = $"Shelf{shelf_index}";
                     InstanceShelf.transform.SetParent(instantiatedObject.transform);
                     Shelf Shelf_component = InstanceShelf.GetComponent<Shelf>();
-                    Debug.Log($" {this.Grid_rotation}");
+                    //Debug.Log($" {this.Grid_rotation}");
 
                     if (new_rotation == 0f) 
                     {
-                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", this.Grid_rotation);
+                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", this.Grid_rotation, l_index >= path_l);
                     }
                     else
                     {
-                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", -this.Grid_rotation);
+                        Shelf_component.Initialize(InstanceShelf, $"Shelf{shelf_index}", -this.Grid_rotation, l_index >= path_l);
                     }
                     this.Shelf_List.Add($"Shelf{shelf_index}",Shelf_component);
 
@@ -328,13 +316,13 @@ public class warehouse : MonoBehaviour
         //dluzsze sciany
         GameObject front_wall1 = GameObject.CreatePrimitive(PrimitiveType.Cube);
         // x, y, z, gdzie y to wysokosc
-        front_wall1.transform.position = new Vector3(this.LocationX + 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall1.transform.position = new Vector3(this.LocationX + (( wall_length * 13.05f ) - holeWidth) /4 + holeWidth / 2, 8f, this.LocationY + 6.75f);
         front_wall1.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
         front_wall1.transform.SetParent(instantiatedObject.transform);
 
         GameObject front_wall2 = GameObject.CreatePrimitive(PrimitiveType.Cube);
 
-        front_wall2.transform.position = new Vector3(this.LocationX - 18.0f, 8f, this.LocationY + 6.75f);
+        front_wall2.transform.position = new Vector3(this.LocationX - ((wall_length * 13.05f) - holeWidth) / 4 - holeWidth / 2, 8f, this.LocationY + 6.75f);
         front_wall2.transform.localScale = new Vector3((wall_length * 13.05f) / 2 - holeWidth / 2, 15f, 1f);
         front_wall2.transform.SetParent(instantiatedObject.transform);
 
@@ -384,7 +372,7 @@ public class warehouse : MonoBehaviour
         robot.warehouse_id = ID;
         robot.LocationX = this.Grid_X;
         robot.LocationY = this.Grid_Y;
-
+        robot.warehouse_rotation = this.Grid_rotation;
         this.robot = robot;
 
         instantiatedObject.transform.rotation = Quaternion.Euler(new Vector3(0, this.rotation, 0));
@@ -394,9 +382,6 @@ public class warehouse : MonoBehaviour
         return 0;
 
     }
-
-
-
 
     public void UpdateMeshRotation(float posX, float posY)
     {

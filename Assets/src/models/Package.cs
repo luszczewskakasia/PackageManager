@@ -2,7 +2,6 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 using static UnityEngine.GraphicsBuffer;
 
@@ -40,6 +39,10 @@ public class Package:MonoBehaviour
     public Rigidbody RiggedBody;
     public float tolerance;
     public bool Pack_in_robot = false;
+    public Vector3 Place_on_Shelf;
+    public int shelf_rot;
+    public string shelf_name;
+    public bool Mag_side;
     public void Initialize(queue_struct init_data)
     {
         this.size = init_data.size;
@@ -48,8 +51,6 @@ public class Package:MonoBehaviour
         this.road = init_data.road;
         this.Destination_achived = false;
         this.current_location = 0;
-
-
 
         switch(this.size) 
         {
@@ -147,7 +148,6 @@ public class Package:MonoBehaviour
             if (Wait_for_bot)
             {
                 Pack_in_robot = true;
-                Vector3 shelf_coords = Pack_to_Shelf();
                 Pack_to_bot();
             }
         }
@@ -159,20 +159,12 @@ public class Package:MonoBehaviour
 
     }
 
-    public Vector3 Pack_to_Shelf() 
-    {
-        GameObject simGO = GameObject.Find("Simulation");
-        Simulation sim = simGO.GetComponent<Simulation>();
-        Vector3 sim.Warehouses[warehouseID].
-
-    }
-
-
     public void Pack_to_bot()
     {
         GameObject simGO = GameObject.Find("Simulation");
         Simulation sim = simGO.GetComponent<Simulation>();
         Robot rob = sim.Warehouses[warehouseID].robot;
+        rob.set_move_steps(this.Place_on_Shelf, shelf_rot,this.Mag_side);
         if (rob != null && this.Package_Mesh != null)
         {
             rob.Take_pack(this);

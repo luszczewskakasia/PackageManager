@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
 
 [System.Serializable]
@@ -18,13 +17,14 @@ public class Shelf: MonoBehaviour
     public int next_small_Medium;
     public int next_small_Big;
     public int rotation;
+    public bool Mag_side; //true patrz¹c przez wejœcie po prawej
 
     public void Start()
     {}
     public void Update()
     { }
 
-    public void Initialize(GameObject mesh, string name,int rotation)
+    public void Initialize(GameObject mesh, string name,int rotation, bool Mag_side)
     { 
         this.Mesh_ = mesh;
         this.Shelf_ID = name;
@@ -36,6 +36,8 @@ public class Shelf: MonoBehaviour
         this.next_small_Medium = 0;
         this.next_small_Big = 0;
         this.rotation = rotation;
+        this.Mag_side = Mag_side;
+
         Cap(9.0f);
 
     }

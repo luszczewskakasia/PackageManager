@@ -6,8 +6,6 @@ using System;
 public class MenagePackeges : MonoBehaviour
 {
     public List<Package> Package_List;
-
-    // Start is called before the first frame update
     void Start()
     {
         Package_List = new List<Package>();

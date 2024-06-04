@@ -4,9 +4,7 @@ using UnityEngine;
 using System.Text;
 using System;
 using System.Reflection;
-using UnityEditor.Experimental.GraphView;
 using System.ComponentModel;
-using TreeEditor;
 using Unity.VisualScripting;
 
 [System.Serializable]
@@ -54,15 +52,16 @@ public class SortLine : MonoBehaviour
     public GameObject T_Cross_Mesh;
     public GameObject Cross_Mesh;
     public GameObject Turn_Mesh;
-
     private GameObject SortLine_Mesh;
-
     public void Awake()
     {
         this.Node_vertices = new List<Node>();
         this.Node_Connections = new Dictionary<int, List<Edge>>();
         Node ScanPoint = new Node(0, 0, 0);
         ScanPoint.final = true;
+        GameObject simGO = GameObject.Find("Simulation");
+        Simulation sim = simGO.GetComponent<Simulation>();
+
         Node StartNode = new Node(1, 0, 0);
         StartNode.from_ = 1;
         StartNode.Input_dir = 2;
@@ -70,6 +69,7 @@ public class SortLine : MonoBehaviour
         int ScP = Add_new_point(ScanPoint);
         int StN = Add_new_point(StartNode);
         Add_new_edge(ScP, StN);
+        //sim.warehouseFileds.Add(new WarehouseFiled(-1, -1, 1, 1));
 
     }
     public void Start()
